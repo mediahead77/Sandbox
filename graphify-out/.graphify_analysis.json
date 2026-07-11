@@ -1,0 +1,190 @@
+{
+  "communities": {
+    "0": [
+      "app_script",
+      "app_script_fcdeck",
+      "app_script_fcseen",
+      "app_script_filterverbs",
+      "app_script_learnedset",
+      "app_script_mcdeck",
+      "app_script_qaskfields",
+      "app_script_qdeck",
+      "app_script_verbs"
+    ],
+    "1": [
+      "app_script_checkanswer",
+      "app_script_gohome",
+      "app_script_mcselect",
+      "app_script_normalize",
+      "app_script_savestate",
+      "app_script_updateheader",
+      "app_script_updatemcscores"
+    ],
+    "2": [
+      "app_script_closeresult",
+      "app_script_eschtml",
+      "app_script_fcshuffle",
+      "app_script_rendermc",
+      "app_script_shuffle",
+      "app_script_startmchoice"
+    ],
+    "3": [
+      "app_script_nextquiz",
+      "app_script_renderquiz",
+      "app_script_revealanswer",
+      "app_script_showresult",
+      "app_script_startquiz",
+      "app_script_updatequizscores"
+    ],
+    "4": [
+      "app_script_builddots",
+      "app_script_buildverblist",
+      "app_script_showscreen",
+      "app_script_startflashcards"
+    ],
+    "5": [
+      "app_script_fcmove",
+      "app_script_flipcard",
+      "app_script_renderflashcard"
+    ]
+  },
+  "cohesion": {
+    "0": 0.2222222222222222,
+    "1": 0.3333333333333333,
+    "2": 0.4,
+    "3": 0.3333333333333333,
+    "4": 0.5,
+    "5": 0.6666666666666666
+  },
+  "gods": [
+    {
+      "id": "app_script_showscreen",
+      "label": "showScreen()",
+      "degree": 6
+    },
+    {
+      "id": "app_script_startquiz",
+      "label": "startQuiz()",
+      "degree": 6
+    },
+    {
+      "id": "app_script_checkanswer",
+      "label": "checkAnswer()",
+      "degree": 6
+    },
+    {
+      "id": "app_script_startmchoice",
+      "label": "startMChoice()",
+      "degree": 6
+    },
+    {
+      "id": "app_script_rendermc",
+      "label": "renderMC()",
+      "degree": 6
+    },
+    {
+      "id": "app_script_shuffle",
+      "label": "shuffle()",
+      "degree": 5
+    },
+    {
+      "id": "app_script_renderflashcard",
+      "label": "renderFlashcard()",
+      "degree": 5
+    },
+    {
+      "id": "app_script_mcselect",
+      "label": "mcSelect()",
+      "degree": 5
+    },
+    {
+      "id": "app_script_updateheader",
+      "label": "updateHeader()",
+      "degree": 4
+    },
+    {
+      "id": "app_script_startflashcards",
+      "label": "startFlashcards()",
+      "degree": 4
+    }
+  ],
+  "surprises": [
+    {
+      "source": "goHome()",
+      "target": "showScreen()",
+      "source_files": [
+        "_app_script.js",
+        "_app_script.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 4 → community 1"
+    },
+    {
+      "source": "startMChoice()",
+      "target": "showScreen()",
+      "source_files": [
+        "_app_script.js",
+        "_app_script.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 4 → community 2"
+    },
+    {
+      "source": "startQuiz()",
+      "target": "showScreen()",
+      "source_files": [
+        "_app_script.js",
+        "_app_script.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 4 → community 3"
+    },
+    {
+      "source": "startQuiz()",
+      "target": "shuffle()",
+      "source_files": [
+        "_app_script.js",
+        "_app_script.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 2 → community 3"
+    },
+    {
+      "source": "startFlashcards()",
+      "target": "renderFlashcard()",
+      "source_files": [
+        "_app_script.js",
+        "_app_script.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 4 → community 5"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `checkAnswer()` connect `Community 1` to `Community 0`, `Community 3`?",
+      "why": "High betweenness centrality (0.009) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `showScreen()` connect `Community 4` to `Community 0`, `Community 1`, `Community 2`, `Community 3`?",
+      "why": "High betweenness centrality (0.008) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `startQuiz()` connect `Community 3` to `Community 0`, `Community 2`, `Community 4`?",
+      "why": "High betweenness centrality (0.008) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `VERBS`, `learnedSet`, `fcDeck` to the rest of the system?",
+      "why": "7 weakly-connected nodes found - possible documentation gaps or missing edges."
+    }
+  ]
+}
