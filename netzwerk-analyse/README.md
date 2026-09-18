@@ -106,6 +106,45 @@ Der Bericht enthält:
 - eine regelbasierte Diagnose in Textform mit konkreten nächsten Schritten
 - optional (`--plot`) ein PNG-Diagramm der Latenz über die Zeit
 
+## 6. Alternative: Web-Dashboard (`webui.py`)
+
+Statt alles über SSH/Kommandozeile zu bedienen, gibt es ein kleines
+Browser-Dashboard - ideal für einen dauerhaften Betrieb z.B. auf einer NAS.
+Nutzt ebenfalls nur die Python-Standardbibliothek (kein Flask/Django nötig).
+
+```bash
+python3 webui.py --port 8787
+```
+
+Danach im Browser: `http://<IP-des-Geräts>:8787`
+
+Das Dashboard bietet:
+
+- **Start/Stopp-Button** für die Messung (startet/beendet `analyzer.py
+  monitor` im Hintergrund als eigenen Prozess)
+- **Konfigurationsformular** für Ziele, Intervall und CSV-Pfad, ohne eine
+  Datei bearbeiten zu müssen
+- **Notiz-Formular**, um Auffälligkeiten direkt im Browser festzuhalten
+- **Bericht-Seite** (`/report`) mit Tabelle, Latenz-Diagramm (als SVG,
+  ohne matplotlib) und der regelbasierten Diagnose
+
+**Dauerbetrieb auf einer Synology NAS**, damit das Dashboard nach jedem
+Neustart automatisch wieder verfügbar ist:
+**Systemsteuerung → Aufgabenplaner → Erstellen → Ausgelöstes Skript →
+Ereignis: Bootup**, und als Skript:
+
+```bash
+cd /volume1/homes/<benutzer>/<ordner> && nohup python3 webui.py --port 8787 > webui.log 2>&1 &
+```
+
+Für einen App-artigen Zugriff direkt vom DSM-Desktop aus: Rechtsklick auf den
+freien DSM-Desktop → **Hinzufügen** → Verknüpfung mit der URL
+`http://<NAS-IP>:8787` anlegen - erscheint dann als Icon im DSM-Hauptmenü.
+
+**Sicherheitshinweis:** Das Dashboard hat keine Anmeldung/Authentifizierung
+und ist nur für den Einsatz im eigenen, vertrauenswürdigen Heimnetz gedacht.
+Port 8787 nicht per Port-Forwarding aus dem Internet erreichbar machen.
+
 ## Typische Ursachen bei dieser Topologie und Gegenmaßnahmen
 
 - **Doppel-NAT**: Kabelrouter in Bridge-/Modem-Modus betreiben, nur der
@@ -126,6 +165,7 @@ Der Bericht enthält:
 
 ## Dateien
 
-- `analyzer.py` - das Tool (Subcommands: `monitor`, `note`, `traceroute`, `report`)
+- `analyzer.py` - das CLI-Tool (Subcommands: `monitor`, `note`, `traceroute`, `report`)
+- `webui.py` - optionales Browser-Dashboard rund um `analyzer.py` (siehe Abschnitt 6)
 - CSV-Logs und Notiz-Dateien werden im aktuellen Verzeichnis erzeugt, sofern
   kein Pfad angegeben wird.

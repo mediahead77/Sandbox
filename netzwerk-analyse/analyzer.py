@@ -228,8 +228,8 @@ def cmd_monitor(args):
                     rtt = ping_once(host, timeout_s=args.timeout)
                     loss = 1 if rtt is None else 0
                     writer.writerow([ts, name, host, rtt if rtt is not None else "", loss, wifi_dbm])
+                    f.flush()
                     row_summary.append(f"{name}={'TIMEOUT' if rtt is None else f'{rtt:.0f}ms'}")
-                f.flush()
 
                 print(f"[{ts}] " + "  ".join(row_summary) + (f"  wifi={wifi_dbm:.0f}dBm" if wifi_dbm != "" else ""))
 
@@ -300,6 +300,66 @@ def percentile(values, pct):
     return s[f] + (s[c] - s[f]) * (k - f)
 
 
+def compute_stats_by_target(by_target):
+    """Berechnet Kennzahlen je Ziel. Wird von der CLI und vom Web-Dashboard genutzt."""
+    stats_by_target = {}
+    for target, trows in by_target.items():
+        total = len(trows)
+        losses = sum(1 for r in trows if r["loss"] == "1")
+        rtts = [float(r["rtt_ms"]) for r in trows if r["rtt_ms"]]
+        loss_pct = 100.0 * losses / total if total else 0.0
+
+        if rtts:
+            jitter = statistics.pstdev(rtts) if len(rtts) > 1 else 0.0
+            avg = statistics.mean(rtts)
+            median = statistics.median(rtts)
+            p95 = percentile(rtts, 0.95)
+            rtt_max = max(rtts)
+        else:
+            jitter = avg = median = p95 = rtt_max = None
+
+        hourly = defaultdict(list)
+        for r in trows:
+            try:
+                ts = datetime.strptime(r["timestamp"], TIMESTAMP_FMT)
+            except ValueError:
+                continue
+            hourly[ts.hour].append(r)
+        worst_hour, worst_hour_loss = None, -1
+        for h, hrows in hourly.items():
+            hl = sum(1 for r in hrows if r["loss"] == "1")
+            pct = 100.0 * hl / len(hrows)
+            if pct > worst_hour_loss:
+                worst_hour_loss, worst_hour = pct, h
+
+        stats_by_target[target] = {
+            "host": trows[0]["host"], "total": total, "losses": losses, "loss_pct": loss_pct,
+            "avg": avg, "median": median, "p95": p95, "max": rtt_max, "jitter": jitter,
+            "worst_hour": worst_hour,
+            "worst_hour_loss": worst_hour_loss if worst_hour_loss >= 0 else None,
+            "rows": trows,
+        }
+    return stats_by_target
+
+
+def correlate_notes(by_target, notes):
+    """Gleicht Notizen mit Latenz-/Verlustwerten in einem ±30s Fenster ab."""
+    results = []
+    for ts, text in notes:
+        window_start, window_end = ts - timedelta(seconds=30), ts + timedelta(seconds=30)
+        hits = []
+        for target, trows in by_target.items():
+            near = [
+                r for r in trows
+                if window_start <= datetime.strptime(r["timestamp"], TIMESTAMP_FMT) <= window_end
+            ]
+            near_loss = sum(1 for r in near if r["loss"] == "1")
+            if near and near_loss > 0:
+                hits.append((target, near_loss, len(near)))
+        results.append({"ts": ts, "text": text, "hits": hits})
+    return results
+
+
 def cmd_report(args):
     rows = load_rows(args.csv)
     if not rows:
@@ -311,69 +371,33 @@ def cmd_report(args):
     for r in rows:
         by_target[r["target"]].append(r)
 
+    stats_by_target = compute_stats_by_target(by_target)
+
     print("=" * 70)
     print("NETZWERK-ANALYSE-BERICHT")
     print("=" * 70)
 
-    stats_by_target = {}
-    for target, trows in by_target.items():
-        total = len(trows)
-        losses = sum(1 for r in trows if r["loss"] == "1")
-        rtts = [float(r["rtt_ms"]) for r in trows if r["rtt_ms"]]
-        loss_pct = 100.0 * losses / total if total else 0.0
-
-        print(f"\n--- Ziel: {target} ({trows[0]['host']}) ---")
-        print(f"  Messungen:       {total}")
-        print(f"  Paketverlust:    {loss_pct:.2f} %  ({losses}/{total})")
-        if rtts:
-            jitter = statistics.pstdev(rtts) if len(rtts) > 1 else 0.0
-            avg = statistics.mean(rtts)
-            p95 = percentile(rtts, 0.95)
+    for target, s in stats_by_target.items():
+        print(f"\n--- Ziel: {target} ({s['host']}) ---")
+        print(f"  Messungen:       {s['total']}")
+        print(f"  Paketverlust:    {s['loss_pct']:.2f} %  ({s['losses']}/{s['total']})")
+        if s["avg"] is not None:
             print(f"  Latenz avg/median/p95/max: "
-                  f"{avg:.1f} / {statistics.median(rtts):.1f} / {p95:.1f} / {max(rtts):.1f} ms")
-            print(f"  Jitter (Std.abw.): {jitter:.1f} ms")
+                  f"{s['avg']:.1f} / {s['median']:.1f} / {s['p95']:.1f} / {s['max']:.1f} ms")
+            print(f"  Jitter (Std.abw.): {s['jitter']:.1f} ms")
         else:
-            avg = jitter = p95 = None
             print("  Keine erfolgreichen Antworten erhalten.")
-
-        stats_by_target[target] = {
-            "loss_pct": loss_pct, "avg": avg, "jitter": jitter, "p95": p95, "rows": trows,
-        }
-
-        # Stündliche Auffälligkeiten
-        hourly = defaultdict(list)
-        for r in trows:
-            try:
-                ts = datetime.strptime(r["timestamp"], TIMESTAMP_FMT)
-            except ValueError:
-                continue
-            hourly[ts.hour].append(r)
-        worst_hour, worst_loss = None, -1
-        for h, hrows in hourly.items():
-            hl = sum(1 for r in hrows if r["loss"] == "1")
-            pct = 100.0 * hl / len(hrows)
-            if pct > worst_loss:
-                worst_loss, worst_hour = pct, h
-        if worst_hour is not None and worst_loss > 0:
-            print(f"  Höchster Paketverlust um {worst_hour:02d}:00 Uhr ({worst_loss:.1f} %)")
+        if s["worst_hour"] is not None and s["worst_hour_loss"] > 0:
+            print(f"  Höchster Paketverlust um {s['worst_hour']:02d}:00 Uhr ({s['worst_hour_loss']:.1f} %)")
 
     # Notizen-Korrelation
     if notes:
         print("\n--- Abgleich mit Notizen (±30s Fenster) ---")
-        for ts, text in notes:
-            window_start, window_end = ts - timedelta(seconds=30), ts + timedelta(seconds=30)
-            hits = []
-            for target, trows in by_target.items():
-                near = [
-                    r for r in trows
-                    if window_start <= datetime.strptime(r["timestamp"], TIMESTAMP_FMT) <= window_end
-                ]
-                near_loss = sum(1 for r in near if r["loss"] == "1")
-                if near and near_loss > 0:
-                    hits.append(f"{target}: {near_loss}/{len(near)} Verluste")
-            note_str = f"[{ts.strftime(TIMESTAMP_FMT)}] '{text}'"
-            if hits:
-                print(f"  {note_str} -> mögliche Korrelation: " + "; ".join(hits))
+        for item in correlate_notes(by_target, notes):
+            note_str = f"[{item['ts'].strftime(TIMESTAMP_FMT)}] '{item['text']}'"
+            if item["hits"]:
+                hit_str = "; ".join(f"{t}: {l}/{n} Verluste" for t, l, n in item["hits"])
+                print(f"  {note_str} -> mögliche Korrelation: {hit_str}")
             else:
                 print(f"  {note_str} -> keine auffälligen Verluste im Zeitfenster")
 
