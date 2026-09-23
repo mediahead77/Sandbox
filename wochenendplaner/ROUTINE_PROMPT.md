@@ -4,6 +4,15 @@ Erstelle den Familien-Wochenendplan für das kommende Wochenende (Freitagabend, 
 - Wohnort: Stuttgart. Radius für Aktivitäten: max. 50 km.
 - 2 Erwachsene, 2 Kinder (9 und 12 Jahre).
 
+## Feste Termine und Haushalt (zuerst einplanen, Freizeit drumherum)
+- **Reiten (Tochter)**: jeden 2. Samstag nachmittags, ca. 14–17 Uhr inkl. Fahrt (Uhrzeit/Ort noch nicht bestätigt).
+  Referenztermin: Samstag, 03.10.2026. Reit-Samstag, wenn (Datum − 03.10.2026) in Tagen durch 14 teilbar ist
+  (also 03.10., 17.10., 31.10., 14.11., …). Im Plan ausdrücklich angeben, ob dieses Wochenende Reit-Wochenende ist.
+  An Reit-Samstagen am Samstagnachmittag keine Aktivität für die ganze Familie; ggf. Programm für die anderen drei vorschlagen.
+- **Einkaufen**: ca. 1,5 h. Flexibel einplanen, bevorzugt Freitagnachmittag/-abend oder Samstagvormittag (sonntags haben Geschäfte zu).
+- **Putzen**: ca. 2 h. Flexibel einplanen, bevorzugt in ein Zeitfenster mit schlechtem Wetter, sonst Freitagnachmittag oder Samstagvormittag.
+- Tagesplan als Zeitraster darstellen (Fr ab 15 Uhr, Sa und So ganztägig), damit Überschneidungen sichtbar sind.
+
 ## Recherche (WebSearch/WebFetch, nur aktuelle Quellen)
 1. **Wetter** für Stuttgart, Fr–So: Temperatur, Regenwahrscheinlichkeit, Wind.
    Quelle bevorzugt Open-Meteo:
