@@ -11,6 +11,7 @@ Erstelle den Familien-Wochenendplan für das kommende Wochenende (Freitagabend, 
   An Reit-Samstagen am Samstagnachmittag keine Aktivität für die ganze Familie; ggf. Programm für die anderen drei vorschlagen.
 - **Einkaufen**: ca. 1,5 h. Flexibel einplanen, bevorzugt Freitagnachmittag/-abend oder Samstagvormittag (sonntags haben Geschäfte zu).
 - **Putzen**: ca. 2 h. Flexibel einplanen, bevorzugt in ein Zeitfenster mit schlechtem Wetter, sonst Freitagnachmittag oder Samstagvormittag.
+- **Feiertage**: Prüfen, ob Fr, Sa oder So ein gesetzlicher Feiertag in Baden-Württemberg ist (z. B. 03.10.). Dann haben Geschäfte zu: Einkauf auf einen offenen Werktag davor legen und im Plan darauf hinweisen.
 - Tagesplan als Zeitraster darstellen (Fr ab 15 Uhr, Sa und So ganztägig), damit Überschneidungen sichtbar sind.
 
 ## Recherche (WebSearch/WebFetch, nur aktuelle Quellen)
