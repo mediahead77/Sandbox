@@ -5,10 +5,13 @@ Erstelle den Familien-Wochenendplan für das kommende Wochenende (Freitagabend, 
 - 2 Erwachsene, 2 Kinder (9 und 12 Jahre).
 
 ## Feste Termine und Haushalt (zuerst einplanen, Freizeit drumherum)
-- **Reiten (Tochter)**: jeden 2. Samstag nachmittags, ca. 14–17 Uhr inkl. Fahrt (Uhrzeit/Ort noch nicht bestätigt).
+- **Reiten (Tochter, 9 Jahre)**: jeden 2. Samstag 13–15 Uhr auf dem Martinshof in Schöckingen (Ditzingen).
+  Im Zeitraster 12:30–15:30 inkl. Hin- und Rückfahrt blocken (Fahrzeit ab Stuttgart vorab per Suche prüfen).
   Referenztermin: Samstag, 03.10.2026. Reit-Samstag, wenn (Datum − 03.10.2026) in Tagen durch 14 teilbar ist
   (also 03.10., 17.10., 31.10., 14.11., …). Im Plan ausdrücklich angeben, ob dieses Wochenende Reit-Wochenende ist.
-  An Reit-Samstagen am Samstagnachmittag keine Aktivität für die ganze Familie; ggf. Programm für die anderen drei vorschlagen.
+  An Reit-Samstagen: Samstagvormittag bis ca. 12 Uhr frei für Familie/Haushalt. Für die anderen drei (2 Erwachsene + Kind 12)
+  während 13–15 Uhr eine Aktivität in der Nähe von Schöckingen/Ditzingen/Leonberg vorschlagen (max. 15 Min. vom Hof),
+  damit niemand zweimal fahren muss. Feiertag (z. B. 03.10.): Hinweis, dass Reitstunde evtl. entfällt.
 - **Einkaufen**: ca. 1,5 h. Flexibel einplanen, bevorzugt Freitagnachmittag/-abend oder Samstagvormittag (sonntags haben Geschäfte zu).
 - **Putzen**: ca. 2 h. Flexibel einplanen, bevorzugt in ein Zeitfenster mit schlechtem Wetter, sonst Freitagnachmittag oder Samstagvormittag.
 - **Feiertage**: Prüfen, ob Fr, Sa oder So ein gesetzlicher Feiertag in Baden-Württemberg ist (z. B. 03.10.). Dann haben Geschäfte zu: Einkauf auf einen offenen Werktag davor legen und im Plan darauf hinweisen.
