@@ -1,0 +1,653 @@
+<title>Abendübungen</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=Azeret+Mono:wght@500;700&display=swap">
+<style>
+  :root {
+    --bg: #eef2f4;
+    --surface: #ffffff;
+    --surface-2: #e3e9ed;
+    --ink: #17222c;
+    --muted: #5a6975;
+    --line: #cfd8de;
+    --good: #1f8a4c;
+    --good-soft: #dff2e6;
+    --warn: #a4400f;
+    --warn-soft: #fbe6da;
+    --kid: #0e7c86;
+    --on-kid: #ffffff;
+    --shadow: 0 1px 2px rgba(23, 34, 44, .06), 0 4px 16px rgba(23, 34, 44, .06);
+    --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+    --mono: "Azeret Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #10171d;
+      --surface: #19232b;
+      --surface-2: #233039;
+      --ink: #e8eef2;
+      --muted: #97a6b1;
+      --line: #2e3d48;
+      --good: #5cc98a;
+      --good-soft: #173826;
+      --warn: #f39a6b;
+      --warn-soft: #3a2218;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #10171d;
+    --surface: #19232b;
+    --surface-2: #233039;
+    --ink: #e8eef2;
+    --muted: #97a6b1;
+    --line: #2e3d48;
+    --good: #5cc98a;
+    --good-soft: #173826;
+    --warn: #f39a6b;
+    --warn-soft: #3a2218;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.5 var(--body);
+  }
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 20px 16px 48px;
+    display: grid;
+    gap: 20px;
+  }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--kid); outline-offset: 2px; }
+
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  h1 { font: 800 1.9rem/1.1 var(--display); margin: 0; letter-spacing: -.01em; }
+  .date { color: var(--muted); font-size: .95rem; }
+
+  .kids { display: flex; gap: 8px; flex-wrap: wrap; }
+  .kid-tab {
+    border: 2px solid var(--line);
+    background: var(--surface);
+    border-radius: 999px;
+    padding: 8px 16px 8px 10px;
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700;
+  }
+  .kid-tab .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--c); flex: none; }
+  .kid-tab small { font-weight: 400; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .kid-tab[aria-selected="true"] { border-color: var(--c); background: var(--c); color: #fff; }
+  .kid-tab[aria-selected="true"] small { color: rgba(255,255,255,.85); }
+  .kid-tab[aria-selected="true"] .dot { background: #fff; }
+  .kid-tab .ok { font-size: .85rem; }
+
+  .status {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: grid;
+    gap: 16px;
+  }
+  .status-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: .75rem; color: var(--muted); font-weight: 700; }
+  .block-name { font: 700 1.25rem/1.2 var(--display); margin-top: 2px; }
+  .daycount { text-align: right; }
+  .daycount b { font: 800 2.6rem/1 var(--display); color: var(--kid); font-variant-numeric: tabular-nums; }
+  .daycount span { color: var(--muted); font-size: 1rem; }
+
+  .weeks { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .weeks i {
+    aspect-ratio: 1; max-width: 100%;
+    border-radius: 6px;
+    background: var(--surface-2);
+    display: grid; place-items: center;
+    font: 500 .7rem/1 var(--mono);
+    color: var(--muted);
+    font-style: normal;
+  }
+  .weeks i.full { background: var(--kid); color: var(--on-kid); }
+  .weeks i.next { box-shadow: inset 0 0 0 2px var(--kid); color: var(--kid); font-weight: 700; }
+  .weeks-legend { display: flex; justify-content: space-between; color: var(--muted); font-size: .8rem; }
+
+  .note { border-radius: 12px; padding: 10px 14px; font-size: .95rem; }
+  .note.bad { background: var(--warn-soft); color: var(--warn); }
+  .note.good { background: var(--good-soft); color: var(--good); }
+
+  .today { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .today h2 { font: 700 1.15rem/1.2 var(--display); margin: 0; }
+  .pill { border-radius: 999px; padding: 4px 12px; font-size: .85rem; font-weight: 700; background: var(--surface-2); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .pill.done { background: var(--good-soft); color: var(--good); }
+
+  .list { display: grid; gap: 12px; }
+  .ex {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px 14px;
+    align-items: center;
+    border: 2px solid transparent;
+  }
+  .ex.done { border-color: var(--good); }
+  .ex.running { border-color: var(--kid); }
+  .check {
+    width: 44px; height: 44px; border-radius: 12px;
+    border: 2px solid var(--line); background: var(--surface);
+    display: grid; place-items: center;
+    font-size: 1.3rem; font-weight: 700; color: transparent;
+  }
+  .ex.done .check { background: var(--good); border-color: var(--good); color: #fff; }
+  .ex-title { font-weight: 700; font-size: 1.1rem; line-height: 1.25; }
+  .ex-num { color: var(--muted); font: 500 .8rem var(--mono); display: block; }
+  .ex-hint { display: block; font-weight: 400; font-size: .9rem; color: var(--muted); margin-top: 2px; }
+  .ex-body { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .timer { display: flex; align-items: center; gap: 6px; }
+  .step {
+    width: 44px; height: 44px; border-radius: 12px;
+    border: 1px solid var(--line); background: var(--surface-2);
+    font: 700 .85rem var(--mono);
+  }
+  .step:disabled { opacity: .4; cursor: default; }
+  .time { font: 700 1.9rem/1 var(--mono); min-width: 5.2ch; text-align: center; font-variant-numeric: tabular-nums; }
+  .ex.running .time { color: var(--kid); }
+  .run { display: flex; gap: 6px; align-items: center; }
+  .go {
+    height: 44px; padding: 0 18px; border-radius: 12px; border: 0;
+    background: var(--kid); color: var(--on-kid); font-weight: 700; min-width: 96px;
+  }
+  .reset { height: 44px; width: 44px; border-radius: 12px; border: 1px solid var(--line); background: transparent; font-size: 1.1rem; }
+  .reps { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: .9rem; }
+  .reps input { width: 4.5em; height: 36px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); padding: 0 8px; font-variant-numeric: tabular-nums; }
+
+  details.settings { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); }
+  details.settings > summary { padding: 14px 16px; font-weight: 700; cursor: pointer; }
+  .set-body { padding: 0 16px 18px; display: grid; gap: 22px; }
+  .set-body h3 { font: 700 1rem var(--display); margin: 0 0 4px; }
+  .hint { color: var(--muted); font-size: .88rem; margin: 0 0 10px; max-width: 60ch; }
+  .rows { display: grid; gap: 8px; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .row .tag { font: 500 .8rem var(--mono); color: var(--muted); width: 2.4em; }
+  .row input[type="text"] { flex: 1 1 160px; min-width: 0; }
+  .row input, .row select { height: 40px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); padding: 0 10px; }
+  .row input[type="number"] { width: 5.5em; }
+  .group-sep { border-top: 1px dashed var(--line); margin: 4px 0; }
+  .btn { height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); padding: 0 14px; font-weight: 700; }
+  .btn.primary { background: var(--kid); color: var(--on-kid); border-color: transparent; }
+  .btn.danger { color: var(--warn); }
+  .swatch { width: 28px; height: 28px; border-radius: 50%; border: 0; background: var(--c); }
+  .storage { color: var(--muted); font-size: .8rem; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ex, .check, .weeks i { transition: background-color .2s, border-color .2s; }
+  }
+</style>
+
+<div class="wrap" id="app"></div>
+
+<script>
+(() => {
+  const GOAL = 28;          // Tage in Folge bis zum nächsten Block
+  const PER = 3;            // Übungen pro Block
+  const KID_COLORS = ['#0e7c86', '#c43d52', '#5b5fc7', '#b86e00', '#2f7d32'];
+  const LS_KEY = 'abenduebungen-v1';
+
+  const defaultConfig = () => ({
+    exercises: [
+      ['Seestern (Starfish)', 'Eingerollt starten, dann Arme und Beine zu einem großen Stern öffnen und zurück.'],
+      ['Schnee-Engel (Snow Angels)', 'Auf dem Rücken liegen, Arme und Beine langsam auseinander und wieder zusammen schieben.'],
+      ['Katze-Kuh (Cat-Cow)', 'Im Vierfüßlerstand abwechselnd den Rücken rund machen und mit angehobenem Kopf durchhängen lassen.'],
+      ['Überkreuz-Marsch (Cross Crawl March)', 'Langsam marschieren und dabei mit Hand oder Ellbogen das gegenüberliegende Knie berühren.'],
+      ['Robben (Commando Crawl)', 'Auf dem Bauch auf den Unterarmen und Ellbogen vorwärts ziehen.'],
+      ['Bärengang (Bear Walk)', 'Auf Händen und Füßen gehen, Po oben, Gewicht kontrolliert verlagern.'],
+      ['Krebsgang (Crab Walk)', 'Hüfte anheben und auf Händen und Füßen laufen.'],
+      ['Baumstamm-Rolle (Log Rolls)', 'Körper lang machen und langsam über die Matte von einer Seite zur anderen rollen.'],
+      ['Superman halten (Superman Hold)', 'Auf dem Bauch liegen und Arme, Brust und Beine sanft anheben.'],
+      ['Echsen-Krabbeln (Lizard Crawl)', 'Flach vorwärts krabbeln, dabei führen Ellbogen und Knie derselben Seite.'],
+      ['Brücke halten (Bridge Hold)', 'Auf dem Rücken, Knie gebeugt, Hüfte langsam anheben.'],
+      ['Schaukel-Ei (Rocking Egg)', 'Knie umarmen und sanft vor und zurück schaukeln.'],
+    ].map(([name, hint], i) => ({ id: 'e' + (i + 1), name, hint, sec: 30 })),
+    kids: [
+      { id: 'k1', name: 'Konrad', color: KID_COLORS[0] },
+      { id: 'k2', name: 'Greta', color: KID_COLORS[1] },
+    ],
+  });
+
+  let config = defaultConfig();
+  let progress = {};            // kidId -> gespeicherter Fortschritt
+  let activeKid = null;
+  let db = null;
+  let mode = 'local';
+  let confirmRemove = null;
+  const running = {};           // "kid:ex" -> { endAt, remaining, iv }
+
+  // ---------- Datum ----------
+  const pad = n => String(n).padStart(2, '0');
+  const isoDay = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  const todayStr = () => isoDay(new Date());
+  const dayNum = s => { const [y, m, d] = s.split('-').map(Number); return Date.UTC(y, m - 1, d) / 864e5; };
+  const gapDays = (a, b) => dayNum(b) - dayNum(a);
+  const yesterdayStr = () => { const d = new Date(); d.setDate(d.getDate() - 1); return isoDay(d); };
+
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fmt = sec => pad(Math.floor(sec / 60)) + ':' + pad(sec % 60);
+  const groupCount = () => Math.max(1, Math.ceil(config.exercises.length / PER));
+  const groupExercises = g => config.exercises.slice(g * PER, g * PER + PER);
+
+  // ---------- Regeln ----------
+  // Rechnet den gespeicherten Stand auf "heute" hoch: Blockwechsel nach 28 Tagen, Neustart nach Lücke.
+  function normalize(stored) {
+    const today = todayStr();
+    const p = Object.assign({ group: 0, streak: 0, lastDone: null, prevLastDone: null, day: null, done: [], timers: {}, note: null }, JSON.parse(JSON.stringify(stored || {})));
+    p.group = Math.min(p.group, groupCount() - 1);
+    if (p.day !== today) { p.day = today; p.done = []; }
+    if (p.lastDone && p.lastDone < today) {
+      if (p.streak >= GOAL) {
+        p.note = { type: 'up', date: today, from: p.group };
+        p.group = (p.group + 1) % groupCount();
+        p.streak = 0;
+      } else if (gapDays(p.lastDone, today) > 1 && p.streak > 0) {
+        p.note = { type: 'broken', date: today, lost: p.streak, last: p.lastDone };
+        p.streak = 0;
+      }
+    }
+    return p;
+  }
+
+  function toggleExercise(kidId, exId, forceOn) {
+    const p = normalize(progress[kidId]);
+    const today = todayStr();
+    const on = p.done.includes(exId);
+    if (forceOn && on) return;
+    const ids = groupExercises(p.group).map(e => e.id);
+    const wasComplete = p.lastDone === today;
+    p.done = on ? p.done.filter(x => x !== exId) : [...p.done, exId];
+    const nowComplete = ids.length > 0 && ids.every(id => p.done.includes(id));
+    if (nowComplete && !wasComplete) {
+      p.prevLastDone = p.lastDone;
+      p.streak = (p.lastDone && gapDays(p.lastDone, today) === 1) ? p.streak + 1 : 1;
+      p.lastDone = today;
+    } else if (!nowComplete && wasComplete) {
+      p.streak = Math.max(0, p.streak - 1);
+      p.lastDone = p.prevLastDone;
+    }
+    saveKid(kidId, p);
+  }
+
+  // ---------- Speicher ----------
+  const writeQueues = {};
+  function queueWrite(path, data) {
+    const prev = writeQueues[path] || Promise.resolve();
+    writeQueues[path] = prev.then(() => db.doc(path).set(data)).catch(e => console.warn('Speichern fehlgeschlagen', e));
+  }
+  function persistLocal() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ config, progress })); } catch (e) {}
+  }
+  function saveKid(kidId, p) {
+    progress[kidId] = p;
+    if (db) queueWrite('kinder/' + kidId, p); else persistLocal();
+    render();
+  }
+  function saveConfig() {
+    if (db) queueWrite('app/config', config); else persistLocal();
+    render();
+  }
+  const timerSaves = {};
+  function saveKidSoon(kidId, p) {
+    progress[kidId] = p;
+    clearTimeout(timerSaves[kidId]);
+    timerSaves[kidId] = setTimeout(() => saveKid(kidId, progress[kidId]), 600);
+    render();
+  }
+
+  function loadLocal() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+      if (raw && raw.config) { config = raw.config; progress = raw.progress || {}; }
+    } catch (e) {}
+  }
+
+  async function initStore() {
+    loadLocal();
+    render();
+    let handle = null;
+    try { handle = window.claude && window.claude.use ? await window.claude.use('db') : null; } catch (e) { handle = null; }
+    if (!handle) return;
+    db = handle;
+    mode = 'db';
+    db.doc('app/config').onSnapshot(snap => {
+      if (snap.exists) config = JSON.parse(JSON.stringify(snap.data()));
+      render();
+    }, () => {});
+    db.collection('kinder').onSnapshot(snap => {
+      const next = {};
+      snap.docs.forEach(d => { next[d.id] = JSON.parse(JSON.stringify(d.data())); });
+      progress = next;
+      render();
+    }, () => {});
+  }
+
+  // ---------- Timer ----------
+  let audio = null;
+  let wakeLock = null;
+  function beep() {
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      [0, .35, .7].forEach((t, i) => {
+        const o = audio.createOscillator(), g = audio.createGain();
+        o.frequency.value = i === 2 ? 1046 : 784;
+        g.gain.setValueAtTime(.001, audio.currentTime + t);
+        g.gain.exponentialRampToValueAtTime(.3, audio.currentTime + t + .02);
+        g.gain.exponentialRampToValueAtTime(.001, audio.currentTime + t + .3);
+        o.connect(g).connect(audio.destination);
+        o.start(audio.currentTime + t); o.stop(audio.currentTime + t + .32);
+      });
+    } catch (e) {}
+    try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch (e) {}
+  }
+  async function keepAwake(on) {
+    try {
+      if (on && !wakeLock && navigator.wakeLock) wakeLock = await navigator.wakeLock.request('screen');
+      if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
+    } catch (e) { wakeLock = null; }
+  }
+
+  function secondsFor(p, ex) {
+    const t = p.timers && p.timers[ex.id];
+    return t && t.sec ? t.sec : ex.sec;
+  }
+  function remainingFor(kidId, ex, p) {
+    const r = running[kidId + ':' + ex.id];
+    if (!r) return secondsFor(p, ex);
+    if (r.endAt) return Math.max(0, Math.ceil((r.endAt - Date.now()) / 1000));
+    return r.remaining;
+  }
+  function stopTimer(key, keepRemaining) {
+    const r = running[key];
+    if (!r) return;
+    clearInterval(r.iv);
+    if (keepRemaining) { r.remaining = Math.max(0, Math.ceil((r.endAt - Date.now()) / 1000)); r.endAt = null; }
+    else delete running[key];
+    if (!Object.values(running).some(x => x.endAt)) keepAwake(false);
+  }
+  function startTimer(kidId, ex) {
+    const key = kidId + ':' + ex.id;
+    try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch (e) {}
+    Object.keys(running).forEach(k => { if (k !== key && running[k].endAt) stopTimer(k, true); });
+    const p = normalize(progress[kidId]);
+    const from = running[key] ? running[key].remaining : secondsFor(p, ex);
+    const r = running[key] = { endAt: Date.now() + from * 1000, remaining: from };
+    keepAwake(true);
+    r.iv = setInterval(() => {
+      const left = Math.max(0, Math.ceil((r.endAt - Date.now()) / 1000));
+      const el = document.querySelector('[data-time="' + key + '"]');
+      if (el) el.textContent = fmt(left);
+      if (left <= 0) {
+        stopTimer(key, false);
+        beep();
+        toggleExercise(kidId, ex.id, true);
+      }
+    }, 200);
+    render();
+  }
+
+  // ---------- Darstellung ----------
+  function kidColor(k) { return k.color || KID_COLORS[0]; }
+
+  function render() {
+    const app = document.getElementById('app');
+    if (!config.kids.length) config.kids = defaultConfig().kids;
+    if (!activeKid || !config.kids.find(k => k.id === activeKid)) {
+      try { activeKid = localStorage.getItem(LS_KEY + ':kid'); } catch (e) {}
+      if (!config.kids.find(k => k.id === activeKid)) activeKid = config.kids[0].id;
+    }
+    const kid = config.kids.find(k => k.id === activeKid);
+    const p = normalize(progress[kid.id]);
+    const today = todayStr();
+    const exs = groupExercises(p.group);
+    const doneCount = exs.filter(e => p.done.includes(e.id)).length;
+    const dayDone = p.lastDone === today;
+    const first = p.group * PER + 1, last = p.group * PER + exs.length;
+    document.documentElement.style.setProperty('--kid', kidColor(kid));
+
+    // Fokus merken, damit Live-Updates das Tippen nicht unterbrechen
+    const f = document.activeElement;
+    const focusId = f && f.id && app.contains(f) ? f.id : null;
+    const sel = focusId && f.selectionStart != null ? [f.selectionStart, f.selectionEnd] : null;
+    const openSettings = !!(app.querySelector('details.settings') || {}).open;
+
+    let note = '';
+    if (p.note && p.note.date === today) {
+      if (p.note.type === 'broken') note = `<div class="note bad">Die Serie ist unterbrochen (zuletzt geschafft am ${new Date(p.note.last + 'T12:00').toLocaleDateString('de-DE', { day: 'numeric', month: 'long' })}, ${p.note.lost} ${p.note.lost === 1 ? 'Tag' : 'Tage'}). Die 28 Tage starten heute neu.</div>`;
+      if (p.note.type === 'up') note = `<div class="note good">28 Tage geschafft! Ab heute gilt der nächste Block.</div>`;
+    }
+    if (dayDone && p.streak >= GOAL) note = `<div class="note good">Tag 28 geschafft! Ab morgen kommen die nächsten Übungen.</div>`;
+
+    const shown = p.streak;
+    const weeks = Array.from({ length: GOAL }, (_, i) => {
+      const cls = i < shown ? 'full' : (i === shown && !dayDone ? 'next' : '');
+      return `<i class="${cls}">${i + 1}</i>`;
+    }).join('');
+
+    const tabs = config.kids.map(k => {
+      const kp = normalize(progress[k.id]);
+      const ok = kp.lastDone === today;
+      return `<button class="kid-tab" role="tab" aria-selected="${k.id === kid.id}" data-act="kid" data-kid="${k.id}" style="--c:${kidColor(k)}">
+        <span class="dot"></span>${esc(k.name)} <small>Tag ${kp.streak}/${GOAL}</small>${ok ? '<span class="ok" aria-label="heute erledigt">✓</span>' : ''}</button>`;
+    }).join('');
+
+    const cards = exs.map((ex, i) => {
+      const key = kid.id + ':' + ex.id;
+      const r = running[key];
+      const isRun = !!(r && r.endAt);
+      const isPaused = !!(r && !r.endAt);
+      const done = p.done.includes(ex.id);
+      const t = (p.timers && p.timers[ex.id]) || {};
+      return `<article class="ex${done ? ' done' : ''}${isRun ? ' running' : ''}">
+        <button class="check" data-act="toggle" data-ex="${ex.id}" aria-pressed="${done}" aria-label="${esc(ex.name)} erledigt">✓</button>
+        <div class="ex-title"><span class="ex-num">Übung ${first + i}</span>${esc(ex.name)}${ex.hint ? `<span class="ex-hint">${esc(ex.hint)}</span>` : ''}</div>
+        <div class="ex-body">
+          <div class="timer">
+            <button class="step" data-act="minus" data-ex="${ex.id}" ${r ? 'disabled' : ''} aria-label="5 Sekunden weniger">−5</button>
+            <output class="time" data-time="${key}">${fmt(remainingFor(kid.id, ex, p))}</output>
+            <button class="step" data-act="plus" data-ex="${ex.id}" ${r ? 'disabled' : ''} aria-label="5 Sekunden mehr">+5</button>
+          </div>
+          <div class="run">
+            <button class="go" data-act="${isRun ? 'pause' : 'start'}" data-ex="${ex.id}">${isRun ? 'Pause' : isPaused ? 'Weiter' : 'Start'}</button>
+            <button class="reset" data-act="reset" data-ex="${ex.id}" aria-label="Timer zurücksetzen">↺</button>
+          </div>
+          <label class="reps">Wdh.
+            <input type="number" min="0" inputmode="numeric" id="reps-${kid.id}-${ex.id}" data-act="reps" data-ex="${ex.id}" value="${t.reps != null ? esc(t.reps) : ''}" placeholder="–">
+          </label>
+        </div>
+      </article>`;
+    }).join('');
+
+    const exRows = config.exercises.map((ex, i) => `
+      ${i > 0 && i % PER === 0 ? '<div class="group-sep"></div>' : ''}
+      <div class="row">
+        <span class="tag">${i + 1}.</span>
+        <input type="text" id="exname-${ex.id}" data-act="exname" data-ex="${ex.id}" value="${esc(ex.name)}" aria-label="Name von Übung ${i + 1}">
+        <input type="number" min="5" step="5" id="exsec-${ex.id}" data-act="exsec" data-ex="${ex.id}" value="${ex.sec}" aria-label="Standardzeit in Sekunden"> s
+      </div>`).join('');
+
+    const kidRows = config.kids.map((k, i) => `
+      <div class="row">
+        <button class="swatch" style="--c:${kidColor(k)}" data-act="color" data-kid="${k.id}" aria-label="Farbe wechseln"></button>
+        <input type="text" id="kidname-${k.id}" data-act="kidname" data-kid="${k.id}" value="${esc(k.name)}" aria-label="Name">
+        ${config.kids.length > 1 ? (confirmRemove === k.id
+          ? `<button class="btn danger" data-act="kidremove-yes" data-kid="${k.id}">Wirklich löschen</button><button class="btn" data-act="kidremove-no">Abbrechen</button>`
+          : `<button class="btn danger" data-act="kidremove" data-kid="${k.id}">Entfernen</button>`) : ''}
+      </div>`).join('');
+
+    const groupOpts = Array.from({ length: groupCount() }, (_, g) => {
+      const ge = groupExercises(g);
+      return `<option value="${g}" ${g === p.group ? 'selected' : ''}>Block ${g + 1}: Übung ${g * PER + 1}–${g * PER + ge.length}</option>`;
+    }).join('');
+
+    app.innerHTML = `
+      <header class="top">
+        <h1>Abendübungen</h1>
+        <span class="date">${new Date().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+      </header>
+
+      <nav class="kids" role="tablist" aria-label="Kind auswählen">${tabs}</nav>
+
+      <section class="status" aria-label="Fortschritt">
+        <div class="status-head">
+          <div>
+            <div class="eyebrow">Block ${p.group + 1} von ${groupCount()}</div>
+            <div class="block-name">Übungen ${first}–${last}</div>
+          </div>
+          <div class="daycount"><b>${shown}</b> <span>/ ${GOAL} Tage in Folge</span></div>
+        </div>
+        <div class="weeks" aria-hidden="true">${weeks}</div>
+        <div class="weeks-legend"><span>Woche 1</span><span>Woche 4</span></div>
+        ${note}
+      </section>
+
+      <div class="today">
+        <h2>Heute</h2>
+        <span class="pill ${dayDone ? 'done' : ''}">${dayDone ? 'Geschafft ✓' : doneCount + ' von ' + exs.length + ' erledigt'}</span>
+      </div>
+      <section class="list">${cards}</section>
+
+      <details class="settings" ${openSettings ? 'open' : ''}>
+        <summary>Einstellungen</summary>
+        <div class="set-body">
+          <div>
+            <h3>Übungen</h3>
+            <p class="hint">Je 3 Übungen bilden einen Block. Die Zeit rechts ist der Startwert. Was ihr am Timer verstellt, merkt sich die App für jedes Kind einzeln.</p>
+            <div class="rows">${exRows}</div>
+            <div class="row" style="margin-top:10px">
+              <button class="btn" data-act="exadd">+ 3 Übungen</button>
+              ${config.exercises.length > PER ? '<button class="btn danger" data-act="exdel">Letzte 3 entfernen</button>' : ''}
+            </div>
+          </div>
+          <div>
+            <h3>Kinder</h3>
+            <div class="rows">${kidRows}</div>
+            <div class="row" style="margin-top:10px"><button class="btn" data-act="kidadd">+ Kind</button></div>
+          </div>
+          <div>
+            <h3>Stand korrigieren: ${esc(kid.name)}</h3>
+            <p class="hint">Falls ihr schon mittendrin seid. Die Tage zählen als bis gestern geschafft, heute geht es weiter.</p>
+            <div class="row">
+              <select id="fix-group">${groupOpts}</select>
+              <input type="number" id="fix-streak" min="0" max="${GOAL - 1}" value="${dayDone ? p.streak - 1 : p.streak}" aria-label="Tage in Folge"> Tage
+              <button class="btn primary" data-act="fix">Übernehmen</button>
+            </div>
+          </div>
+          <p class="storage">${mode === 'db' ? 'Gespeichert in deinem Claude-Konto, auf allen Geräten gleich.' : 'Gespeichert nur in diesem Browser.'}</p>
+        </div>
+      </details>`;
+
+    if (focusId) {
+      const el = document.getElementById(focusId);
+      if (el) { el.focus(); if (sel && el.setSelectionRange) try { el.setSelectionRange(sel[0], sel[1]); } catch (e) {} }
+    }
+  }
+
+  // ---------- Eingaben ----------
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-act]');
+    if (!b || b.tagName === 'INPUT') return;
+    const act = b.dataset.act, exId = b.dataset.ex;
+    const kidId = activeKid;
+    const ex = config.exercises.find(x => x.id === exId);
+    const key = kidId + ':' + exId;
+
+    if (act === 'kid') {
+      activeKid = b.dataset.kid;
+      try { localStorage.setItem(LS_KEY + ':kid', activeKid); } catch (err) {}
+      render();
+    } else if (act === 'toggle') {
+      toggleExercise(kidId, exId);
+    } else if (act === 'start') {
+      startTimer(kidId, ex);
+    } else if (act === 'pause') {
+      stopTimer(key, true); render();
+    } else if (act === 'reset') {
+      stopTimer(key, false); render();
+    } else if (act === 'minus' || act === 'plus') {
+      const p = normalize(progress[kidId]);
+      const cur = secondsFor(p, ex);
+      const next = Math.max(5, Math.min(3600, cur + (act === 'plus' ? 5 : -5)));
+      p.timers = p.timers || {};
+      p.timers[exId] = Object.assign({}, p.timers[exId], { sec: next });
+      saveKidSoon(kidId, p);
+    } else if (act === 'exadd') {
+      let n = config.exercises.length;
+      for (let i = 0; i < PER; i++) { n++; config.exercises.push({ id: 'e' + Date.now().toString(36) + i, name: 'Übung ' + n, sec: 30 }); }
+      saveConfig();
+    } else if (act === 'exdel') {
+      config.exercises.splice(-PER, PER);
+      saveConfig();
+    } else if (act === 'kidadd') {
+      const i = config.kids.length;
+      config.kids.push({ id: 'k' + Date.now().toString(36), name: 'Kind ' + (i + 1), color: KID_COLORS[i % KID_COLORS.length] });
+      saveConfig();
+    } else if (act === 'kidremove') {
+      confirmRemove = b.dataset.kid; render();
+    } else if (act === 'kidremove-no') {
+      confirmRemove = null; render();
+    } else if (act === 'kidremove-yes') {
+      const id = b.dataset.kid;
+      config.kids = config.kids.filter(k => k.id !== id);
+      confirmRemove = null;
+      delete progress[id];
+      if (db) db.doc('kinder/' + id).delete().catch(() => {});
+      saveConfig();
+    } else if (act === 'color') {
+      const k = config.kids.find(x => x.id === b.dataset.kid);
+      k.color = KID_COLORS[(KID_COLORS.indexOf(k.color) + 1) % KID_COLORS.length];
+      saveConfig();
+    } else if (act === 'fix') {
+      const g = Number(document.getElementById('fix-group').value) || 0;
+      const s = Math.max(0, Math.min(GOAL - 1, Number(document.getElementById('fix-streak').value) || 0));
+      const p = normalize(progress[kidId]);
+      p.group = g; p.streak = s; p.done = []; p.note = null;
+      p.lastDone = s > 0 ? yesterdayStr() : null; p.prevLastDone = null;
+      Object.keys(running).forEach(k => k.startsWith(kidId + ':') && stopTimer(k, false));
+      saveKid(kidId, p);
+    }
+  });
+
+  document.addEventListener('change', e => {
+    const el = e.target, act = el.dataset.act;
+    if (!act) return;
+    const ex = config.exercises.find(x => x.id === el.dataset.ex);
+    if (act === 'reps') {
+      const p = normalize(progress[activeKid]);
+      p.timers = p.timers || {};
+      p.timers[ex.id] = Object.assign({}, p.timers[ex.id], { reps: el.value === '' ? null : Number(el.value) });
+      saveKid(activeKid, p);
+    } else if (act === 'exname') {
+      ex.name = el.value.trim() || ex.name; saveConfig();
+    } else if (act === 'exsec') {
+      ex.sec = Math.max(5, Math.min(3600, Math.round(Number(el.value) || 30))); saveConfig();
+    } else if (act === 'kidname') {
+      const k = config.kids.find(x => x.id === el.dataset.kid);
+      k.name = el.value.trim() || k.name; saveConfig();
+    }
+  });
+
+  // Tageswechsel bei offener Seite
+  let lastDay = todayStr();
+  setInterval(() => { if (todayStr() !== lastDay) { lastDay = todayStr(); render(); } }, 30000);
+
+  initStore();
+})();
+</script>
