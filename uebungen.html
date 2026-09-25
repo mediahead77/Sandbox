@@ -152,6 +152,7 @@
   .ex.done .check { background: var(--good); border-color: var(--good); color: #fff; }
   .ex-title { font-weight: 700; font-size: 1.1rem; line-height: 1.25; }
   .ex-num { color: var(--muted); font: 500 .8rem var(--mono); display: block; }
+  .ex-hint { display: block; font-weight: 400; font-size: .9rem; color: var(--muted); margin-top: 2px; }
   .ex-body { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
   .timer { display: flex; align-items: center; gap: 6px; }
   .step {
@@ -204,7 +205,20 @@
   const LS_KEY = 'abenduebungen-v1';
 
   const defaultConfig = () => ({
-    exercises: Array.from({ length: 9 }, (_, i) => ({ id: 'e' + (i + 1), name: 'Übung ' + (i + 1), sec: 30 })),
+    exercises: [
+      ['Seestern (Starfish)', 'Eingerollt starten, dann Arme und Beine zu einem großen Stern öffnen und zurück.'],
+      ['Schnee-Engel (Snow Angels)', 'Auf dem Rücken liegen, Arme und Beine langsam auseinander und wieder zusammen schieben.'],
+      ['Katze-Kuh (Cat-Cow)', 'Im Vierfüßlerstand abwechselnd den Rücken rund machen und mit angehobenem Kopf durchhängen lassen.'],
+      ['Überkreuz-Marsch (Cross Crawl March)', 'Langsam marschieren und dabei mit Hand oder Ellbogen das gegenüberliegende Knie berühren.'],
+      ['Robben (Commando Crawl)', 'Auf dem Bauch auf den Unterarmen und Ellbogen vorwärts ziehen.'],
+      ['Bärengang (Bear Walk)', 'Auf Händen und Füßen gehen, Po oben, Gewicht kontrolliert verlagern.'],
+      ['Krebsgang (Crab Walk)', 'Hüfte anheben und auf Händen und Füßen laufen.'],
+      ['Baumstamm-Rolle (Log Rolls)', 'Körper lang machen und langsam über die Matte von einer Seite zur anderen rollen.'],
+      ['Superman halten (Superman Hold)', 'Auf dem Bauch liegen und Arme, Brust und Beine sanft anheben.'],
+      ['Echsen-Krabbeln (Lizard Crawl)', 'Flach vorwärts krabbeln, dabei führen Ellbogen und Knie derselben Seite.'],
+      ['Brücke halten (Bridge Hold)', 'Auf dem Rücken, Knie gebeugt, Hüfte langsam anheben.'],
+      ['Schaukel-Ei (Rocking Egg)', 'Knie umarmen und sanft vor und zurück schaukeln.'],
+    ].map(([name, hint], i) => ({ id: 'e' + (i + 1), name, hint, sec: 30 })),
     kids: [
       { id: 'k1', name: 'Kind 1', color: KID_COLORS[0] },
       { id: 'k2', name: 'Kind 2', color: KID_COLORS[1] },
@@ -443,7 +457,7 @@
       const t = (p.timers && p.timers[ex.id]) || {};
       return `<article class="ex${done ? ' done' : ''}${isRun ? ' running' : ''}">
         <button class="check" data-act="toggle" data-ex="${ex.id}" aria-pressed="${done}" aria-label="${esc(ex.name)} erledigt">✓</button>
-        <div class="ex-title"><span class="ex-num">Übung ${first + i}</span>${esc(ex.name)}</div>
+        <div class="ex-title"><span class="ex-num">Übung ${first + i}</span>${esc(ex.name)}${ex.hint ? `<span class="ex-hint">${esc(ex.hint)}</span>` : ''}</div>
         <div class="ex-body">
           <div class="timer">
             <button class="step" data-act="minus" data-ex="${ex.id}" ${r ? 'disabled' : ''} aria-label="5 Sekunden weniger">−5</button>
