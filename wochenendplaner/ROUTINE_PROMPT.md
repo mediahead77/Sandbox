@@ -22,6 +22,9 @@ Erstelle den Familien-Wochenendplan für das kommende Wochenende (Freitagabend, 
 ## Haushalt (flexibel einplanen)
 - **Einkaufen**: ca. 1,5 h. Bevorzugt Freitag 18–19:30 (Tim + Kinder, Öffnungszeiten prüfen) oder Samstagvormittag. Sonntags zu.
 - **Putzen**: ca. 2 h. Bevorzugt in ein Zeitfenster mit schlechtem Wetter, sonst Samstagvormittag.
+- **Hemden waschen/bügeln (Tim)**: 1,5–2 h, nur an Reit-Wochenenden (gleiche 14-Tage-Regel wie Reiten).
+  Bevorzugt Sonntag 19:30–21:30 nach den Abendübungen. Hinweis im Plan: Waschmaschine schon tagsüber anstellen
+  (z. B. während des Schul-Slots), damit abends nur noch gebügelt wird.
 - **Feiertage**: Prüfen, ob Fr, Sa oder So ein gesetzlicher Feiertag in Baden-Württemberg ist (z. B. 03.10.).
   Dann haben Geschäfte zu: Einkauf auf einen offenen Termin davor legen und im Plan darauf hinweisen.
 - Tagesplan als Zeitraster darstellen (Fr ab 18 Uhr, Sa und So ganztägig), damit Überschneidungen sichtbar sind.
@@ -47,7 +50,7 @@ Erstelle den Familien-Wochenendplan für das kommende Wochenende (Freitagabend, 
 1. **Webseite aktualisieren**: Lade den Skill `artifact-design` und veröffentliche den Plan per Artifact-Tool mit
    `url: https://claude.ai/artifact/H8Uh9FJ3x6K6ik2JEqAE2J` (erst mit `action: read` lesen, dann auf derselben URL neu veröffentlichen,
    Titel „Wochenendplan Stuttgart“ beibehalten, keine neue Artifact-URL anlegen).
-   Aufbau: Wetter-Übersicht, Tagesplan Fr/Sa/So als Zeitraster (inkl. Sport, Reiten, Schule, Abendübungen, Einkaufen, Putzen) mit Plan B,
+   Aufbau: Wetter-Übersicht, Tagesplan Fr/Sa/So als Zeitraster (inkl. Sport, Reiten, Schule, Abendübungen, Einkaufen, Putzen, Hemden) mit Plan B,
    Veranstaltungsliste, Wanderung, Kosten-Übersicht, Einkehr, Quellen.
 2. **Kalenderdatei (Apple Kalender)**: Erzeuge eine iCalendar-Datei `wochenendplan-<JJJJ-MM-TT Sa>.ics` (RFC 5545) mit allen
    geplanten Terminen des Wochenendes (feste Termine, Haushalt, Hauptaktivitäten; Plan-B-Alternativen nicht).
@@ -57,7 +60,7 @@ Erstelle den Familien-Wochenendplan für das kommende Wochenende (Freitagabend, 
      `DTSTAMP` in UTC, `SUMMARY`, `LOCATION` (Adresse, falls bekannt), `DESCRIPTION` (Kurzinfo + Quell-Link).
    - Zeilenenden CRLF, Sonderzeichen (Komma, Semikolon) escapen, lange Zeilen falten.
 3. **E-Mail** per Gmail (send_message) an {{EMAIL}}, Betreff „Wochenendplan <Datum Sa>–<Datum So>“:
-   Kurzfassung (Wetter in einem Satz, Reit-Wochenende ja/nein, je Tag 2–3 Stichpunkte inkl. Einkauf/Putzen/Schule, Top-Veranstaltung, Wanderung)
+   Kurzfassung (Wetter in einem Satz, Reit-Wochenende ja/nein, je Tag 2–3 Stichpunkte inkl. Einkauf/Putzen/Schule/Hemden, Top-Veranstaltung, Wanderung)
    plus Link https://claude.ai/artifact/H8Uh9FJ3x6K6ik2JEqAE2J.
    Die .ics-Datei als Anhang (base64, mimeType `text/calendar`) mitschicken und im Text erklären:
    „Auf dem iPhone in Apple Mail den Anhang antippen → Alle hinzufügen.“
