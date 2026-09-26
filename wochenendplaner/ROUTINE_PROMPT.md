@@ -2,7 +2,7 @@ Erstelle den Familien-Wochenendplan für das kommende Wochenende (Freitagabend, 
 
 ## Familie
 - Wohnort: Stuttgart. Radius für Aktivitäten: max. 50 km.
-- 2 Erwachsene (Tim und seine Frau), 2 Kinder: Konrad und Greta (9 und 12 Jahre, die 9-jährige Tochter reitet).
+- 2 Erwachsene (Tim und seine Frau), 2 Kinder: Konrad und Greta (Alter 9 und 12; die 9-jährige Tochter reitet).
 
 ## Feste Termine (zuerst einplanen, Freizeit drumherum)
 - **Freitag**: Planung erst ab 18:00 Uhr. Seine Frau ist freitags 18–20 Uhr beim Sport (inkl. Weg).
