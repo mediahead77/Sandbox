@@ -15,8 +15,7 @@
     --good-soft: #dff2e6;
     --warn: #a4400f;
     --warn-soft: #fbe6da;
-    --kid: #0e7c86;
-    --on-kid: #ffffff;
+    --accent: #17222c;
     --shadow: 0 1px 2px rgba(23, 34, 44, .06), 0 4px 16px rgba(23, 34, 44, .06);
     --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
     --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
@@ -35,6 +34,7 @@
       --good-soft: #173826;
       --warn: #f39a6b;
       --warn-soft: #3a2218;
+      --accent: #e8eef2;
       --shadow: none;
     }
   }
@@ -50,148 +50,117 @@
     --good-soft: #173826;
     --warn: #f39a6b;
     --warn-soft: #3a2218;
+    --accent: #e8eef2;
     --shadow: none;
   }
 
   * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font: 16px/1.5 var(--body);
-  }
-  .wrap {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 20px 16px 48px;
-    display: grid;
-    gap: 20px;
-  }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 48px; display: grid; gap: 22px; }
   button, input, select { font: inherit; color: inherit; }
   button { cursor: pointer; }
-  :focus-visible { outline: 3px solid var(--kid); outline-offset: 2px; }
+  button:disabled { cursor: default; }
+  :focus-visible { outline: 3px solid var(--c, var(--accent)); outline-offset: 2px; }
 
   .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
   h1 { font: 800 1.9rem/1.1 var(--display); margin: 0; letter-spacing: -.01em; }
+  h2 { font: 700 1.2rem/1.2 var(--display); margin: 0; }
   .date { color: var(--muted); font-size: .95rem; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: .72rem; color: var(--muted); font-weight: 700; }
 
-  .kids { display: flex; gap: 8px; flex-wrap: wrap; }
-  .kid-tab {
-    border: 2px solid var(--line);
-    background: var(--surface);
-    border-radius: 999px;
-    padding: 8px 16px 8px 10px;
-    display: flex; align-items: center; gap: 10px;
-    font-weight: 700;
+  /* Übersicht je Kind */
+  .kids { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .kid {
+    background: var(--surface); border-radius: 16px; padding: 14px 16px; box-shadow: var(--shadow);
+    border-top: 5px solid var(--c); display: grid; gap: 8px; align-content: start;
   }
-  .kid-tab .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--c); flex: none; }
-  .kid-tab small { font-weight: 400; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .kid-tab[aria-selected="true"] { border-color: var(--c); background: var(--c); color: #fff; }
-  .kid-tab[aria-selected="true"] small { color: rgba(255,255,255,.85); }
-  .kid-tab[aria-selected="true"] .dot { background: #fff; }
-  .kid-tab .ok { font-size: .85rem; }
+  .kid-name { font: 800 1.2rem/1.1 var(--display); color: var(--c); }
+  .kid-count { display: flex; align-items: baseline; gap: 6px; }
+  .kid-count b { font: 800 2.2rem/1 var(--display); font-variant-numeric: tabular-nums; }
+  .kid-count span { color: var(--muted); font-size: .9rem; }
+  .bar { display: grid; grid-template-columns: repeat(28, 1fr); gap: 2px; }
+  .bar i { height: 8px; border-radius: 2px; background: var(--surface-2); }
+  .bar i.full { background: var(--c); }
+  .kid-state { font-size: .88rem; font-weight: 700; color: var(--muted); }
+  .kid-state.ok { color: var(--good); }
+  .kid-state.bad { color: var(--warn); font-weight: 400; }
 
-  .status {
-    background: var(--surface);
-    border-radius: 18px;
-    padding: 20px;
-    box-shadow: var(--shadow);
-    display: grid;
-    gap: 16px;
-  }
-  .status-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
-  .eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: .75rem; color: var(--muted); font-weight: 700; }
-  .block-name { font: 700 1.25rem/1.2 var(--display); margin-top: 2px; }
-  .daycount { text-align: right; }
-  .daycount b { font: 800 2.6rem/1 var(--display); color: var(--kid); font-variant-numeric: tabular-nums; }
-  .daycount span { color: var(--muted); font-size: 1rem; }
-
-  .weeks { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-  .weeks i {
-    aspect-ratio: 1; max-width: 100%;
-    border-radius: 6px;
-    background: var(--surface-2);
-    display: grid; place-items: center;
-    font: 500 .7rem/1 var(--mono);
-    color: var(--muted);
-    font-style: normal;
-  }
-  .weeks i.full { background: var(--kid); color: var(--on-kid); }
-  .weeks i.next { box-shadow: inset 0 0 0 2px var(--kid); color: var(--kid); font-weight: 700; }
-  .weeks-legend { display: flex; justify-content: space-between; color: var(--muted); font-size: .8rem; }
-
-  .note { border-radius: 12px; padding: 10px 14px; font-size: .95rem; }
-  .note.bad { background: var(--warn-soft); color: var(--warn); }
-  .note.good { background: var(--good-soft); color: var(--good); }
-
-  .today { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .today h2 { font: 700 1.15rem/1.2 var(--display); margin: 0; }
-  .pill { border-radius: 999px; padding: 4px 12px; font-size: .85rem; font-weight: 700; background: var(--surface-2); color: var(--muted); font-variant-numeric: tabular-nums; }
-  .pill.done { background: var(--good-soft); color: var(--good); }
-
+  /* Heute */
+  .section-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
   .list { display: grid; gap: 12px; }
-  .ex {
-    background: var(--surface);
-    border-radius: 16px;
-    padding: 14px 16px;
-    box-shadow: var(--shadow);
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 12px 14px;
-    align-items: center;
-    border: 2px solid transparent;
-  }
-  .ex.done { border-color: var(--good); }
-  .ex.running { border-color: var(--kid); }
-  .check {
-    width: 44px; height: 44px; border-radius: 12px;
-    border: 2px solid var(--line); background: var(--surface);
-    display: grid; place-items: center;
-    font-size: 1.3rem; font-weight: 700; color: transparent;
-  }
-  .ex.done .check { background: var(--good); border-color: var(--good); color: #fff; }
+  .ex { background: var(--surface); border-radius: 16px; padding: 14px; box-shadow: var(--shadow); display: grid; gap: 12px; }
+  .ex-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
   .ex-title { font-weight: 700; font-size: 1.1rem; line-height: 1.25; }
-  .ex-num { color: var(--muted); font: 500 .8rem var(--mono); display: block; }
+  .ex-num { color: var(--muted); font: 500 .78rem var(--mono); display: block; }
   .ex-hint { display: block; font-weight: 400; font-size: .9rem; color: var(--muted); margin-top: 2px; }
-  .ex-body { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-  .timer { display: flex; align-items: center; gap: 6px; }
+  .all {
+    flex: none; height: 40px; padding: 0 14px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--surface-2); font-weight: 700; font-size: .9rem;
+  }
+  .lanes { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  .lane {
+    border: 2px solid var(--line); border-radius: 12px; padding: 10px; display: grid; gap: 8px; min-width: 0;
+  }
+  .lane.running { border-color: var(--c); }
+  .lane.done { border-color: var(--good); background: var(--good-soft); }
+  .lane-name { font-weight: 700; color: var(--c); font-size: .95rem; display: flex; justify-content: space-between; gap: 6px; }
+  .lane-ex { font-size: .85rem; color: var(--muted); line-height: 1.3; }
+  .timer { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
   .step {
-    width: 44px; height: 44px; border-radius: 12px;
-    border: 1px solid var(--line); background: var(--surface-2);
-    font: 700 .85rem var(--mono);
+    width: 34px; height: 34px; border-radius: 10px; flex: none;
+    border: 1px solid var(--line); background: var(--surface); font: 700 .78rem var(--mono);
   }
-  .step:disabled { opacity: .4; cursor: default; }
-  .time { font: 700 1.9rem/1 var(--mono); min-width: 5.2ch; text-align: center; font-variant-numeric: tabular-nums; }
-  .ex.running .time { color: var(--kid); }
-  .run { display: flex; gap: 6px; align-items: center; }
-  .go {
-    height: 44px; padding: 0 18px; border-radius: 12px; border: 0;
-    background: var(--kid); color: var(--on-kid); font-weight: 700; min-width: 96px;
+  .step:disabled { opacity: .35; }
+  .time { font: 700 1.4rem/1 var(--mono); min-width: 0; text-align: center; font-variant-numeric: tabular-nums; flex: 1; }
+  .lane.running .time { color: var(--c); }
+  .lane-actions { display: flex; gap: 6px; }
+  .go { flex: 1; min-width: 0; padding: 0 4px; height: 44px; border-radius: 10px; border: 0; background: var(--c); color: #fff; font-weight: 700; }
+  .reset { width: 40px; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); flex: none; }
+  .check {
+    width: 44px; height: 44px; border-radius: 10px; flex: none;
+    border: 2px solid var(--line); background: var(--surface); font-weight: 700; font-size: 1.2rem; color: var(--line);
   }
-  .reset { height: 44px; width: 44px; border-radius: 12px; border: 1px solid var(--line); background: transparent; font-size: 1.1rem; }
-  .reps { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: .9rem; }
-  .reps input { width: 4.5em; height: 36px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); padding: 0 8px; font-variant-numeric: tabular-nums; }
+  .lane.done .check { background: var(--good); border-color: var(--good); color: #fff; }
+  .reps { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: .85rem; }
+  .reps input { width: 4.2em; height: 32px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); padding: 0 8px; font-variant-numeric: tabular-nums; }
 
+  /* Kalender */
+  .cals { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+  .cal { background: var(--surface); border-radius: 16px; padding: 14px; box-shadow: var(--shadow); display: grid; gap: 8px; }
+  .cal-name { font: 800 1.05rem var(--display); color: var(--c); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-wd { text-align: center; font-size: .72rem; color: var(--muted); font-weight: 700; }
+  .day {
+    height: 40px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface);
+    font: 500 .8rem var(--mono); font-variant-numeric: tabular-nums; padding: 0;
+  }
+  .day.done { background: var(--c); border-color: var(--c); color: #fff; }
+  .day.today { box-shadow: inset 0 0 0 2px var(--ink); }
+  .day.done.today { box-shadow: inset 0 0 0 2px var(--surface); }
+  .day:disabled { background: transparent; border-color: transparent; color: var(--muted); opacity: .5; }
+  .day.done:disabled { background: var(--surface-2); color: var(--muted); opacity: .8; }
+  .hint { color: var(--muted); font-size: .88rem; margin: 0; max-width: 62ch; }
+
+  /* Einstellungen */
   details.settings { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); }
   details.settings > summary { padding: 14px 16px; font-weight: 700; cursor: pointer; }
   .set-body { padding: 0 16px 18px; display: grid; gap: 22px; }
   .set-body h3 { font: 700 1rem var(--display); margin: 0 0 4px; }
-  .hint { color: var(--muted); font-size: .88rem; margin: 0 0 10px; max-width: 60ch; }
-  .rows { display: grid; gap: 8px; }
+  .rows { display: grid; gap: 8px; margin-top: 10px; }
   .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .row .tag { font: 500 .8rem var(--mono); color: var(--muted); width: 2.4em; }
+  .row .who { font-weight: 700; color: var(--c); min-width: 5em; }
   .row input[type="text"] { flex: 1 1 160px; min-width: 0; }
-  .row input, .row select { height: 40px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); padding: 0 10px; }
+  .row input, .row select { height: 40px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); padding: 0 10px; max-width: 100%; }
   .row input[type="number"] { width: 5.5em; }
   .group-sep { border-top: 1px dashed var(--line); margin: 4px 0; }
   .btn { height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); padding: 0 14px; font-weight: 700; }
-  .btn.primary { background: var(--kid); color: var(--on-kid); border-color: transparent; }
   .btn.danger { color: var(--warn); }
-  .swatch { width: 28px; height: 28px; border-radius: 50%; border: 0; background: var(--c); }
-  .storage { color: var(--muted); font-size: .8rem; }
+  .swatch { width: 28px; height: 28px; border-radius: 50%; border: 0; background: var(--c); flex: none; }
+  .storage { color: var(--muted); font-size: .8rem; margin: 0; }
 
   @media (prefers-reduced-motion: no-preference) {
-    .ex, .check, .weeks i { transition: background-color .2s, border-color .2s; }
+    .lane, .check, .day, .bar i { transition: background-color .2s, border-color .2s; }
   }
 </style>
 
@@ -201,6 +170,7 @@
 (() => {
   const GOAL = 28;          // Tage in Folge bis zum nächsten Block
   const PER = 3;            // Übungen pro Block
+  const CAL_WEEKS = 5;      // Wochen im Kalender zum Nachtragen
   const KID_COLORS = ['#0e7c86', '#c43d52', '#5b5fc7', '#b86e00', '#2f7d32'];
   const LS_KEY = 'abenduebungen-v1';
 
@@ -226,8 +196,7 @@
   });
 
   let config = defaultConfig();
-  let progress = {};            // kidId -> gespeicherter Fortschritt
-  let activeKid = null;
+  let progress = {};            // kidId -> gespeicherter Stand
   let db = null;
   let mode = 'local';
   let confirmRemove = null;
@@ -236,53 +205,86 @@
   // ---------- Datum ----------
   const pad = n => String(n).padStart(2, '0');
   const isoDay = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  const parseDay = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d, 12); };
+  const addDays = (s, n) => { const d = parseDay(s); d.setDate(d.getDate() + n); return isoDay(d); };
   const todayStr = () => isoDay(new Date());
-  const dayNum = s => { const [y, m, d] = s.split('-').map(Number); return Date.UTC(y, m - 1, d) / 864e5; };
-  const gapDays = (a, b) => dayNum(b) - dayNum(a);
-  const yesterdayStr = () => { const d = new Date(); d.setDate(d.getDate() - 1); return isoDay(d); };
+  const longDate = s => parseDay(s).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+  const shortDate = s => parseDay(s).toLocaleDateString('de-DE', { day: 'numeric', month: 'long' });
 
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fmt = sec => pad(Math.floor(sec / 60)) + ':' + pad(sec % 60);
   const groupCount = () => Math.max(1, Math.ceil(config.exercises.length / PER));
   const groupExercises = g => config.exercises.slice(g * PER, g * PER + PER);
+  const kidById = id => config.kids.find(k => k.id === id);
 
   // ---------- Regeln ----------
-  // Rechnet den gespeicherten Stand auf "heute" hoch: Blockwechsel nach 28 Tagen, Neustart nach Lücke.
-  function normalize(stored) {
+  // Gespeichert werden nur Fakten: an welchen Tagen geübt wurde, welcher Block gilt und seit wann.
+  // Serie und Blockwechsel werden daraus jedes Mal neu berechnet, damit Nachträge sofort zählen.
+  function migrate(stored) {
+    const p = JSON.parse(JSON.stringify(stored || {}));
+    if (!p.doneDays) {
+      p.doneDays = {};
+      if (p.lastDone && p.streak > 0) for (let i = 0; i < p.streak; i++) p.doneDays[addDays(p.lastDone, -i)] = true;
+    }
+    if (!p.today) p.today = { date: p.day || null, ids: p.done || [] };
+    ['streak', 'lastDone', 'prevLastDone', 'day', 'done', 'note'].forEach(k => delete p[k]);
+    p.group = p.group || 0;
+    p.blockStart = p.blockStart || null;
+    p.timers = p.timers || {};
+    return p;
+  }
+
+  function derive(stored) {
+    const p = migrate(stored);
     const today = todayStr();
-    const p = Object.assign({ group: 0, streak: 0, lastDone: null, prevLastDone: null, day: null, done: [], timers: {}, note: null }, JSON.parse(JSON.stringify(stored || {})));
-    p.group = Math.min(p.group, groupCount() - 1);
-    if (p.day !== today) { p.day = today; p.done = []; }
-    if (p.lastDone && p.lastDone < today) {
-      if (p.streak >= GOAL) {
-        p.note = { type: 'up', date: today, from: p.group };
-        p.group = (p.group + 1) % groupCount();
-        p.streak = 0;
-      } else if (gapDays(p.lastDone, today) > 1 && p.streak > 0) {
-        p.note = { type: 'broken', date: today, lost: p.streak, last: p.lastDone };
-        p.streak = 0;
+    const yesterday = addDays(today, -1);
+    const gc = groupCount();
+    p.group = Math.min(p.group, gc - 1);
+    if (p.today.date !== today) p.today = { date: today, ids: [] };
+
+    const doneList = Object.keys(p.doneDays).filter(d => p.doneDays[d]).sort();
+    let start = p.blockStart || doneList[0] || today;
+    const floor = addDays(today, -400);
+    if (start < floor) start = floor;
+
+    let run = 0, complete = false;
+    for (let d = start; d <= today; d = addDays(d, 1)) {
+      if (p.doneDays[d]) run++;
+      else if (d < today) run = 0;
+      if (run >= GOAL) {
+        if (d < today) { p.group = (p.group + 1) % gc; p.blockStart = addDays(d, 1); run = 0; }
+        else complete = true;
       }
     }
+    const effStart = p.blockStart || doneList[0] || today;
+    const gap = run === 0 && !p.doneDays[yesterday] && doneList.some(d => d >= effStart && d < today);
+    return { p, run, complete, gap, dayDone: !!p.doneDays[today] };
+  }
+
+  function prune(p) {
+    const floor = addDays(todayStr(), -400);
+    Object.keys(p.doneDays).forEach(d => { if (d < floor || !p.doneDays[d]) delete p.doneDays[d]; });
     return p;
   }
 
   function toggleExercise(kidId, exId, forceOn) {
-    const p = normalize(progress[kidId]);
+    const { p } = derive(progress[kidId]);
     const today = todayStr();
-    const on = p.done.includes(exId);
+    const on = p.today.ids.includes(exId);
     if (forceOn && on) return;
+    p.today.ids = on ? p.today.ids.filter(x => x !== exId) : [...p.today.ids, exId];
     const ids = groupExercises(p.group).map(e => e.id);
-    const wasComplete = p.lastDone === today;
-    p.done = on ? p.done.filter(x => x !== exId) : [...p.done, exId];
-    const nowComplete = ids.length > 0 && ids.every(id => p.done.includes(id));
-    if (nowComplete && !wasComplete) {
-      p.prevLastDone = p.lastDone;
-      p.streak = (p.lastDone && gapDays(p.lastDone, today) === 1) ? p.streak + 1 : 1;
-      p.lastDone = today;
-    } else if (!nowComplete && wasComplete) {
-      p.streak = Math.max(0, p.streak - 1);
-      p.lastDone = p.prevLastDone;
-    }
+    if (ids.length && ids.every(id => p.today.ids.includes(id))) p.doneDays[today] = true;
+    else delete p.doneDays[today];
+    saveKid(kidId, p);
+  }
+
+  function toggleDay(kidId, date) {
+    const { p } = derive(progress[kidId]);
+    const today = todayStr();
+    if (date > today || (p.blockStart && date < p.blockStart)) return;
+    if (p.doneDays[date]) delete p.doneDays[date]; else p.doneDays[date] = true;
+    if (date === today) p.today.ids = p.doneDays[today] ? groupExercises(p.group).map(e => e.id) : [];
     saveKid(kidId, p);
   }
 
@@ -296,19 +298,19 @@
     try { localStorage.setItem(LS_KEY, JSON.stringify({ config, progress })); } catch (e) {}
   }
   function saveKid(kidId, p) {
-    progress[kidId] = p;
-    if (db) queueWrite('kinder/' + kidId, p); else persistLocal();
+    progress[kidId] = prune(p);
+    if (db) queueWrite('kinder/' + kidId, progress[kidId]); else persistLocal();
     render();
   }
   function saveConfig() {
     if (db) queueWrite('app/config', config); else persistLocal();
     render();
   }
-  const timerSaves = {};
+  const pendingSaves = {};
   function saveKidSoon(kidId, p) {
     progress[kidId] = p;
-    clearTimeout(timerSaves[kidId]);
-    timerSaves[kidId] = setTimeout(() => saveKid(kidId, progress[kidId]), 600);
+    clearTimeout(pendingSaves[kidId]);
+    pendingSaves[kidId] = setTimeout(() => saveKid(kidId, progress[kidId]), 600);
     render();
   }
 
@@ -342,9 +344,12 @@
   // ---------- Timer ----------
   let audio = null;
   let wakeLock = null;
+  function unlockAudio() {
+    try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch (e) {}
+  }
   function beep() {
     try {
-      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      unlockAudio();
       [0, .35, .7].forEach((t, i) => {
         const o = audio.createOscillator(), g = audio.createGain();
         o.frequency.value = i === 2 ? 1046 : 784;
@@ -374,19 +379,19 @@
     if (r.endAt) return Math.max(0, Math.ceil((r.endAt - Date.now()) / 1000));
     return r.remaining;
   }
+  const isRunning = key => !!(running[key] && running[key].endAt);
   function stopTimer(key, keepRemaining) {
     const r = running[key];
     if (!r) return;
     clearInterval(r.iv);
-    if (keepRemaining) { r.remaining = Math.max(0, Math.ceil((r.endAt - Date.now()) / 1000)); r.endAt = null; }
-    else delete running[key];
+    if (keepRemaining && r.endAt) { r.remaining = Math.max(0, Math.ceil((r.endAt - Date.now()) / 1000)); r.endAt = null; }
+    else if (!keepRemaining) delete running[key];
     if (!Object.values(running).some(x => x.endAt)) keepAwake(false);
   }
   function startTimer(kidId, ex) {
     const key = kidId + ':' + ex.id;
-    try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch (e) {}
-    Object.keys(running).forEach(k => { if (k !== key && running[k].endAt) stopTimer(k, true); });
-    const p = normalize(progress[kidId]);
+    if (isRunning(key)) return;
+    const { p } = derive(progress[kidId]);
     const from = running[key] ? running[key].remaining : secondsFor(p, ex);
     const r = running[key] = { endAt: Date.now() + from * 1000, remaining: from };
     keepAwake(true);
@@ -400,136 +405,159 @@
         toggleExercise(kidId, ex.id, true);
       }
     }, 200);
-    render();
   }
 
   // ---------- Darstellung ----------
-  function kidColor(k) { return k.color || KID_COLORS[0]; }
+  function calendarWeeks() {
+    const today = todayStr();
+    const t = parseDay(today);
+    const mondayOffset = (t.getDay() + 6) % 7;
+    const firstMonday = addDays(today, -mondayOffset - (CAL_WEEKS - 1) * 7);
+    return Array.from({ length: CAL_WEEKS * 7 }, (_, i) => addDays(firstMonday, i));
+  }
 
   function render() {
     const app = document.getElementById('app');
     if (!config.kids.length) config.kids = defaultConfig().kids;
-    if (!activeKid || !config.kids.find(k => k.id === activeKid)) {
-      try { activeKid = localStorage.getItem(LS_KEY + ':kid'); } catch (e) {}
-      if (!config.kids.find(k => k.id === activeKid)) activeKid = config.kids[0].id;
-    }
-    const kid = config.kids.find(k => k.id === activeKid);
-    const p = normalize(progress[kid.id]);
     const today = todayStr();
-    const exs = groupExercises(p.group);
-    const doneCount = exs.filter(e => p.done.includes(e.id)).length;
-    const dayDone = p.lastDone === today;
-    const first = p.group * PER + 1, last = p.group * PER + exs.length;
-    document.documentElement.style.setProperty('--kid', kidColor(kid));
+    const kids = config.kids.map(k => ({ k, ...derive(progress[k.id]) }));
 
-    // Fokus merken, damit Live-Updates das Tippen nicht unterbrechen
     const f = document.activeElement;
     const focusId = f && f.id && app.contains(f) ? f.id : null;
     const sel = focusId && f.selectionStart != null ? [f.selectionStart, f.selectionEnd] : null;
     const openSettings = !!(app.querySelector('details.settings') || {}).open;
 
-    let note = '';
-    if (p.note && p.note.date === today) {
-      if (p.note.type === 'broken') note = `<div class="note bad">Die Serie ist unterbrochen (zuletzt geschafft am ${new Date(p.note.last + 'T12:00').toLocaleDateString('de-DE', { day: 'numeric', month: 'long' })}, ${p.note.lost} ${p.note.lost === 1 ? 'Tag' : 'Tage'}). Die 28 Tage starten heute neu.</div>`;
-      if (p.note.type === 'up') note = `<div class="note good">28 Tage geschafft! Ab heute gilt der nächste Block.</div>`;
-    }
-    if (dayDone && p.streak >= GOAL) note = `<div class="note good">Tag 28 geschafft! Ab morgen kommen die nächsten Übungen.</div>`;
-
-    const shown = p.streak;
-    const weeks = Array.from({ length: GOAL }, (_, i) => {
-      const cls = i < shown ? 'full' : (i === shown && !dayDone ? 'next' : '');
-      return `<i class="${cls}">${i + 1}</i>`;
+    // Übersicht
+    const overview = kids.map(({ k, p, run, complete, gap, dayDone }) => {
+      const exs = groupExercises(p.group);
+      const first = p.group * PER + 1, last = p.group * PER + exs.length;
+      const n = exs.filter(e => p.today.ids.includes(e.id)).length;
+      let state = `<div class="kid-state">Heute ${n} von ${exs.length}</div>`;
+      if (complete) state = `<div class="kid-state ok">28 Tage geschafft! Ab morgen Block ${(p.group + 1) % groupCount() + 1}.</div>`;
+      else if (dayDone) state = `<div class="kid-state ok">Heute geschafft ✓</div>`;
+      else if (gap) state = `<div class="kid-state bad">Gestern fehlt, die Zählung startet neu. Falls geübt wurde: unten im Kalender nachtragen.</div>`;
+      const bar = Array.from({ length: GOAL }, (_, i) => `<i class="${i < run ? 'full' : ''}"></i>`).join('');
+      return `<section class="kid" style="--c:${esc(k.color)}">
+        <div class="kid-name">${esc(k.name)}</div>
+        <div class="eyebrow">Block ${p.group + 1} · Übung ${first}–${last}</div>
+        <div class="kid-count"><b>${run}</b><span>/ ${GOAL} Tage in Folge</span></div>
+        <div class="bar" aria-hidden="true">${bar}</div>
+        ${state}
+      </section>`;
     }).join('');
 
-    const tabs = config.kids.map(k => {
-      const kp = normalize(progress[k.id]);
-      const ok = kp.lastDone === today;
-      return `<button class="kid-tab" role="tab" aria-selected="${k.id === kid.id}" data-act="kid" data-kid="${k.id}" style="--c:${kidColor(k)}">
-        <span class="dot"></span>${esc(k.name)} <small>Tag ${kp.streak}/${GOAL}</small>${ok ? '<span class="ok" aria-label="heute erledigt">✓</span>' : ''}</button>`;
-    }).join('');
-
-    const cards = exs.map((ex, i) => {
-      const key = kid.id + ':' + ex.id;
-      const r = running[key];
-      const isRun = !!(r && r.endAt);
-      const isPaused = !!(r && !r.endAt);
-      const done = p.done.includes(ex.id);
-      const t = (p.timers && p.timers[ex.id]) || {};
-      return `<article class="ex${done ? ' done' : ''}${isRun ? ' running' : ''}">
-        <button class="check" data-act="toggle" data-ex="${ex.id}" aria-pressed="${done}" aria-label="${esc(ex.name)} erledigt">✓</button>
-        <div class="ex-title"><span class="ex-num">Übung ${first + i}</span>${esc(ex.name)}${ex.hint ? `<span class="ex-hint">${esc(ex.hint)}</span>` : ''}</div>
-        <div class="ex-body">
+    // Heute: eine Karte pro Übungsplatz, darin eine Spur pro Kind
+    const sameGroup = kids.every(x => x.p.group === kids[0].p.group);
+    const slots = Math.max(...kids.map(x => groupExercises(x.p.group).length));
+    const rows = Array.from({ length: slots }, (_, slot) => {
+      const lanes = kids.map(({ k, p }) => {
+        const ex = groupExercises(p.group)[slot];
+        if (!ex) return '';
+        const key = k.id + ':' + ex.id;
+        const run = isRunning(key);
+        const paused = !!(running[key] && !running[key].endAt);
+        const done = p.today.ids.includes(ex.id);
+        const t = p.timers[ex.id] || {};
+        return `<div class="lane${done ? ' done' : ''}${run ? ' running' : ''}" style="--c:${esc(k.color)}">
+          <div class="lane-name"><span>${esc(k.name)}</span></div>
+          ${sameGroup ? '' : `<div class="lane-ex">${esc(ex.name)}</div>`}
           <div class="timer">
-            <button class="step" data-act="minus" data-ex="${ex.id}" ${r ? 'disabled' : ''} aria-label="5 Sekunden weniger">−5</button>
-            <output class="time" data-time="${key}">${fmt(remainingFor(kid.id, ex, p))}</output>
-            <button class="step" data-act="plus" data-ex="${ex.id}" ${r ? 'disabled' : ''} aria-label="5 Sekunden mehr">+5</button>
+            <button class="step" data-act="minus" data-kid="${k.id}" data-ex="${ex.id}" ${running[key] ? 'disabled' : ''} aria-label="5 Sekunden weniger für ${esc(k.name)}">−5</button>
+            <output class="time" data-time="${key}">${fmt(remainingFor(k.id, ex, p))}</output>
+            <button class="step" data-act="plus" data-kid="${k.id}" data-ex="${ex.id}" ${running[key] ? 'disabled' : ''} aria-label="5 Sekunden mehr für ${esc(k.name)}">+5</button>
           </div>
-          <div class="run">
-            <button class="go" data-act="${isRun ? 'pause' : 'start'}" data-ex="${ex.id}">${isRun ? 'Pause' : isPaused ? 'Weiter' : 'Start'}</button>
-            <button class="reset" data-act="reset" data-ex="${ex.id}" aria-label="Timer zurücksetzen">↺</button>
+          <div class="lane-actions">
+            <button class="go" data-act="${run ? 'pause' : 'start'}" data-kid="${k.id}" data-ex="${ex.id}">${run ? 'Pause' : paused ? 'Weiter' : 'Start'}</button>
+            ${running[key] ? `<button class="reset" data-act="reset" data-kid="${k.id}" data-ex="${ex.id}" aria-label="Timer zurücksetzen">↺</button>` : ''}
+            <button class="check" data-act="toggle" data-kid="${k.id}" data-ex="${ex.id}" aria-pressed="${done}" aria-label="${esc(ex.name)} für ${esc(k.name)} erledigt">✓</button>
           </div>
           <label class="reps">Wdh.
-            <input type="number" min="0" inputmode="numeric" id="reps-${kid.id}-${ex.id}" data-act="reps" data-ex="${ex.id}" value="${t.reps != null ? esc(t.reps) : ''}" placeholder="–">
+            <input type="number" min="0" inputmode="numeric" id="reps-${k.id}-${ex.id}" data-act="reps" data-kid="${k.id}" data-ex="${ex.id}" value="${t.reps != null ? esc(t.reps) : ''}" placeholder="–">
           </label>
-        </div>
+        </div>`;
+      }).join('');
+      const keys = kids.map(({ k, p }) => { const ex = groupExercises(p.group)[slot]; return ex ? k.id + ':' + ex.id : null; }).filter(Boolean);
+      const anyRun = keys.some(isRunning);
+      const allBtn = keys.length > 1 ? `<button class="all" data-act="${anyRun ? 'pauseall' : 'startall'}" data-slot="${slot}">${anyRun ? 'Alle pausieren' : 'Alle starten'}</button>` : '';
+      const ex0 = groupExercises(kids[0].p.group)[slot];
+      const title = sameGroup && ex0
+        ? `<span class="ex-num">Übung ${kids[0].p.group * PER + slot + 1}</span>${esc(ex0.name)}${ex0.hint ? `<span class="ex-hint">${esc(ex0.hint)}</span>` : ''}`
+        : `<span class="ex-num">Übung ${slot + 1} im Block</span>Unterschiedliche Blöcke`;
+      return `<article class="ex">
+        <div class="ex-head"><div class="ex-title">${title}</div>${allBtn}</div>
+        <div class="lanes">${lanes}</div>
       </article>`;
     }).join('');
 
+    // Kalender
+    const days = calendarWeeks();
+    const wd = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map(d => `<div class="cal-wd">${d}</div>`).join('');
+    const cals = kids.map(({ k, p }) => {
+      const cells = days.map(d => {
+        const done = !!p.doneDays[d];
+        const locked = d > today || (p.blockStart && d < p.blockStart);
+        const label = parseDay(d).getDate();
+        const text = label === 1 ? label + '.' + (parseDay(d).getMonth() + 1) + '.' : label;
+        return `<button class="day${done ? ' done' : ''}${d === today ? ' today' : ''}" data-act="day" data-kid="${k.id}" data-day="${d}" ${locked ? 'disabled' : ''} aria-pressed="${done}" aria-label="${longDate(d)}, ${done ? 'geschafft' : 'nicht geschafft'}">${text}</button>`;
+      }).join('');
+      return `<section class="cal" style="--c:${esc(k.color)}">
+        <div class="cal-name">${esc(k.name)}</div>
+        <div class="cal-grid">${wd}${cells}</div>
+      </section>`;
+    }).join('');
+
+    // Einstellungen
     const exRows = config.exercises.map((ex, i) => `
       ${i > 0 && i % PER === 0 ? '<div class="group-sep"></div>' : ''}
       <div class="row">
         <span class="tag">${i + 1}.</span>
         <input type="text" id="exname-${ex.id}" data-act="exname" data-ex="${ex.id}" value="${esc(ex.name)}" aria-label="Name von Übung ${i + 1}">
-        <input type="number" min="5" step="5" id="exsec-${ex.id}" data-act="exsec" data-ex="${ex.id}" value="${ex.sec}" aria-label="Standardzeit in Sekunden"> s
+        <input type="number" min="5" step="5" id="exsec-${ex.id}" data-act="exsec" data-ex="${ex.id}" value="${ex.sec}" aria-label="Startzeit in Sekunden"> s
       </div>`).join('');
 
-    const kidRows = config.kids.map((k, i) => `
+    const kidRows = config.kids.map(k => `
       <div class="row">
-        <button class="swatch" style="--c:${kidColor(k)}" data-act="color" data-kid="${k.id}" aria-label="Farbe wechseln"></button>
+        <button class="swatch" style="--c:${esc(k.color)}" data-act="color" data-kid="${k.id}" aria-label="Farbe von ${esc(k.name)} wechseln"></button>
         <input type="text" id="kidname-${k.id}" data-act="kidname" data-kid="${k.id}" value="${esc(k.name)}" aria-label="Name">
         ${config.kids.length > 1 ? (confirmRemove === k.id
           ? `<button class="btn danger" data-act="kidremove-yes" data-kid="${k.id}">Wirklich löschen</button><button class="btn" data-act="kidremove-no">Abbrechen</button>`
           : `<button class="btn danger" data-act="kidremove" data-kid="${k.id}">Entfernen</button>`) : ''}
       </div>`).join('');
 
-    const groupOpts = Array.from({ length: groupCount() }, (_, g) => {
-      const ge = groupExercises(g);
-      return `<option value="${g}" ${g === p.group ? 'selected' : ''}>Block ${g + 1}: Übung ${g * PER + 1}–${g * PER + ge.length}</option>`;
+    const fixRows = kids.map(({ k, p }) => {
+      const opts = Array.from({ length: groupCount() }, (_, g) => {
+        const ge = groupExercises(g);
+        return `<option value="${g}" ${g === p.group ? 'selected' : ''}>Block ${g + 1}: Übung ${g * PER + 1}–${g * PER + ge.length}</option>`;
+      }).join('');
+      return `<div class="row" style="--c:${esc(k.color)}">
+        <span class="who">${esc(k.name)}</span>
+        <select id="fixg-${k.id}" aria-label="Block für ${esc(k.name)}">${opts}</select>
+        <label class="row">ab <input type="date" id="fixd-${k.id}" max="${today}" value="${p.blockStart || ''}" aria-label="Block begonnen am"></label>
+        <button class="btn" data-act="fix" data-kid="${k.id}">Übernehmen</button>
+      </div>`;
     }).join('');
 
     app.innerHTML = `
       <header class="top">
         <h1>Abendübungen</h1>
-        <span class="date">${new Date().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+        <span class="date">${longDate(today)}</span>
       </header>
 
-      <nav class="kids" role="tablist" aria-label="Kind auswählen">${tabs}</nav>
+      <div class="kids">${overview}</div>
 
-      <section class="status" aria-label="Fortschritt">
-        <div class="status-head">
-          <div>
-            <div class="eyebrow">Block ${p.group + 1} von ${groupCount()}</div>
-            <div class="block-name">Übungen ${first}–${last}</div>
-          </div>
-          <div class="daycount"><b>${shown}</b> <span>/ ${GOAL} Tage in Folge</span></div>
-        </div>
-        <div class="weeks" aria-hidden="true">${weeks}</div>
-        <div class="weeks-legend"><span>Woche 1</span><span>Woche 4</span></div>
-        ${note}
-      </section>
+      <div class="section-head"><h2>Heute</h2></div>
+      <section class="list">${rows}</section>
 
-      <div class="today">
-        <h2>Heute</h2>
-        <span class="pill ${dayDone ? 'done' : ''}">${dayDone ? 'Geschafft ✓' : doneCount + ' von ' + exs.length + ' erledigt'}</span>
-      </div>
-      <section class="list">${cards}</section>
+      <div class="section-head"><h2>Kalender</h2></div>
+      <p class="hint">Vergessen abzuhaken? Tippt auf einen vergangenen Tag, um ihn als geschafft einzutragen oder wieder zu entfernen. Die Tage in Folge werden sofort neu gezählt.</p>
+      <div class="cals">${cals}</div>
 
       <details class="settings" ${openSettings ? 'open' : ''}>
         <summary>Einstellungen</summary>
         <div class="set-body">
           <div>
             <h3>Übungen</h3>
-            <p class="hint">Je 3 Übungen bilden einen Block. Die Zeit rechts ist der Startwert. Was ihr am Timer verstellt, merkt sich die App für jedes Kind einzeln.</p>
+            <p class="hint">Je 3 Übungen bilden einen Block. Die Zeit rechts ist der Startwert. Was ihr am Timer mit −5 und +5 verstellt, merkt sich die App für jedes Kind einzeln.</p>
             <div class="rows">${exRows}</div>
             <div class="row" style="margin-top:10px">
               <button class="btn" data-act="exadd">+ 3 Übungen</button>
@@ -542,13 +570,9 @@
             <div class="row" style="margin-top:10px"><button class="btn" data-act="kidadd">+ Kind</button></div>
           </div>
           <div>
-            <h3>Stand korrigieren: ${esc(kid.name)}</h3>
-            <p class="hint">Falls ihr schon mittendrin seid. Die Tage zählen als bis gestern geschafft, heute geht es weiter.</p>
-            <div class="row">
-              <select id="fix-group">${groupOpts}</select>
-              <input type="number" id="fix-streak" min="0" max="${GOAL - 1}" value="${dayDone ? p.streak - 1 : p.streak}" aria-label="Tage in Folge"> Tage
-              <button class="btn primary" data-act="fix">Übernehmen</button>
-            </div>
+            <h3>Block festlegen</h3>
+            <p class="hint">Normalerweise wechselt die App den Block von selbst. Hier nur eingreifen, wenn ihr schon weiter seid. Tage vor dem Startdatum lassen sich danach nicht mehr ändern.</p>
+            <div class="rows">${fixRows}</div>
           </div>
           <p class="storage">${mode === 'db' ? 'Gespeichert in deinem Claude-Konto, auf allen Geräten gleich.' : 'Gespeichert nur in diesem Browser.'}</p>
         </div>
@@ -561,33 +585,42 @@
   }
 
   // ---------- Eingaben ----------
+  function slotExercises(slot) {
+    return config.kids.map(k => {
+      const { p } = derive(progress[k.id]);
+      return { kidId: k.id, ex: groupExercises(p.group)[slot] };
+    }).filter(x => x.ex);
+  }
+
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-act]');
-    if (!b || b.tagName === 'INPUT') return;
-    const act = b.dataset.act, exId = b.dataset.ex;
-    const kidId = activeKid;
+    if (!b || b.tagName === 'INPUT' || b.tagName === 'SELECT') return;
+    const act = b.dataset.act, kidId = b.dataset.kid, exId = b.dataset.ex;
     const ex = config.exercises.find(x => x.id === exId);
     const key = kidId + ':' + exId;
 
-    if (act === 'kid') {
-      activeKid = b.dataset.kid;
-      try { localStorage.setItem(LS_KEY + ':kid', activeKid); } catch (err) {}
-      render();
-    } else if (act === 'toggle') {
+    if (act === 'toggle') {
       toggleExercise(kidId, exId);
     } else if (act === 'start') {
-      startTimer(kidId, ex);
+      unlockAudio(); startTimer(kidId, ex); render();
     } else if (act === 'pause') {
       stopTimer(key, true); render();
     } else if (act === 'reset') {
       stopTimer(key, false); render();
+    } else if (act === 'startall') {
+      unlockAudio();
+      slotExercises(Number(b.dataset.slot)).forEach(x => startTimer(x.kidId, x.ex));
+      render();
+    } else if (act === 'pauseall') {
+      slotExercises(Number(b.dataset.slot)).forEach(x => stopTimer(x.kidId + ':' + x.ex.id, true));
+      render();
     } else if (act === 'minus' || act === 'plus') {
-      const p = normalize(progress[kidId]);
-      const cur = secondsFor(p, ex);
-      const next = Math.max(5, Math.min(3600, cur + (act === 'plus' ? 5 : -5)));
-      p.timers = p.timers || {};
+      const { p } = derive(progress[kidId]);
+      const next = Math.max(5, Math.min(3600, secondsFor(p, ex) + (act === 'plus' ? 5 : -5)));
       p.timers[exId] = Object.assign({}, p.timers[exId], { sec: next });
       saveKidSoon(kidId, p);
+    } else if (act === 'day') {
+      toggleDay(kidId, b.dataset.day);
     } else if (act === 'exadd') {
       let n = config.exercises.length;
       for (let i = 0; i < PER; i++) { n++; config.exercises.push({ id: 'e' + Date.now().toString(36) + i, name: 'Übung ' + n, sec: 30 }); }
@@ -600,26 +633,27 @@
       config.kids.push({ id: 'k' + Date.now().toString(36), name: 'Kind ' + (i + 1), color: KID_COLORS[i % KID_COLORS.length] });
       saveConfig();
     } else if (act === 'kidremove') {
-      confirmRemove = b.dataset.kid; render();
+      confirmRemove = kidId; render();
     } else if (act === 'kidremove-no') {
       confirmRemove = null; render();
     } else if (act === 'kidremove-yes') {
-      const id = b.dataset.kid;
-      config.kids = config.kids.filter(k => k.id !== id);
+      config.kids = config.kids.filter(k => k.id !== kidId);
       confirmRemove = null;
-      delete progress[id];
-      if (db) db.doc('kinder/' + id).delete().catch(() => {});
+      delete progress[kidId];
+      Object.keys(running).forEach(k => k.startsWith(kidId + ':') && stopTimer(k, false));
+      if (db) db.doc('kinder/' + kidId).delete().catch(() => {});
       saveConfig();
     } else if (act === 'color') {
-      const k = config.kids.find(x => x.id === b.dataset.kid);
+      const k = kidById(kidId);
       k.color = KID_COLORS[(KID_COLORS.indexOf(k.color) + 1) % KID_COLORS.length];
       saveConfig();
     } else if (act === 'fix') {
-      const g = Number(document.getElementById('fix-group').value) || 0;
-      const s = Math.max(0, Math.min(GOAL - 1, Number(document.getElementById('fix-streak').value) || 0));
-      const p = normalize(progress[kidId]);
-      p.group = g; p.streak = s; p.done = []; p.note = null;
-      p.lastDone = s > 0 ? yesterdayStr() : null; p.prevLastDone = null;
+      const g = Number(document.getElementById('fixg-' + kidId).value) || 0;
+      const d = document.getElementById('fixd-' + kidId).value;
+      const { p } = derive(progress[kidId]);
+      p.group = g;
+      p.blockStart = d && d <= todayStr() ? d : todayStr();
+      p.today.ids = p.doneDays[todayStr()] ? groupExercises(g).map(x => x.id) : [];
       Object.keys(running).forEach(k => k.startsWith(kidId + ':') && stopTimer(k, false));
       saveKid(kidId, p);
     }
@@ -630,16 +664,15 @@
     if (!act) return;
     const ex = config.exercises.find(x => x.id === el.dataset.ex);
     if (act === 'reps') {
-      const p = normalize(progress[activeKid]);
-      p.timers = p.timers || {};
+      const { p } = derive(progress[el.dataset.kid]);
       p.timers[ex.id] = Object.assign({}, p.timers[ex.id], { reps: el.value === '' ? null : Number(el.value) });
-      saveKid(activeKid, p);
+      saveKid(el.dataset.kid, p);
     } else if (act === 'exname') {
       ex.name = el.value.trim() || ex.name; saveConfig();
     } else if (act === 'exsec') {
       ex.sec = Math.max(5, Math.min(3600, Math.round(Number(el.value) || 30))); saveConfig();
     } else if (act === 'kidname') {
-      const k = config.kids.find(x => x.id === el.dataset.kid);
+      const k = kidById(el.dataset.kid);
       k.name = el.value.trim() || k.name; saveConfig();
     }
   });
