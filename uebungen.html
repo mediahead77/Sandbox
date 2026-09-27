@@ -130,9 +130,15 @@
   .cal-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
   .cal-name { font: 800 1.05rem var(--display); color: var(--c); }
   .cal-sum { font-size: .85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .month-nav { display: flex; align-items: center; gap: 6px; }
-  .month { font-weight: 700; min-width: 9.5em; text-align: center; }
-  .nav { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); font-size: 1.3rem; line-height: 1; }
+  .month-nav {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface); border-radius: 14px; padding: 8px; box-shadow: var(--shadow);
+  }
+  .month-nav select {
+    flex: 1; min-width: 0; height: 44px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--bg); padding: 0 12px; font-weight: 700; font-size: 1.05rem; text-align: center;
+  }
+  .nav { flex: none; width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); font-size: 1.3rem; line-height: 1; }
   .nav:disabled { opacity: .35; }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
   .cal-wd { text-align: center; font-size: .72rem; color: var(--muted); font-weight: 700; }
@@ -508,7 +514,9 @@
     if (!calMonth || calMonth > thisMonth()) calMonth = thisMonth();
     if (calMonth < oldestMonth()) calMonth = oldestMonth();
     const days = monthCells(calMonth);
-    const monthName = parseDay(calMonth + '-01').toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+    const monthLabel = ym => parseDay(ym + '-01').toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+    const monthOpts = Array.from({ length: CAL_MONTHS_BACK + 1 }, (_, i) => shiftMonth(thisMonth(), -i))
+      .map(ym => `<option value="${ym}" ${ym === calMonth ? 'selected' : ''}>${monthLabel(ym)}</option>`).join('');
     const monthShort = parseDay(calMonth + '-01').toLocaleDateString('de-DE', { month: 'long' });
     const wd = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map(d => `<div class="cal-wd">${d}</div>`).join('');
     const cals = kids.map(({ k, p }) => {
@@ -567,13 +575,11 @@
       <div class="section-head"><h2>Heute</h2></div>
       <section class="list">${rows}</section>
 
-      <div class="section-head">
-        <h2>Kalender</h2>
-        <div class="month-nav">
-          <button class="nav" data-act="month" data-step="-1" ${calMonth <= oldestMonth() ? 'disabled' : ''} aria-label="Vorheriger Monat">‹</button>
-          <span class="month" aria-live="polite">${monthName}</span>
-          <button class="nav" data-act="month" data-step="1" ${calMonth >= thisMonth() ? 'disabled' : ''} aria-label="Nächster Monat">›</button>
-        </div>
+      <div class="section-head"><h2>Kalender</h2></div>
+      <div class="month-nav">
+        <button class="nav" data-act="month" data-step="-1" ${calMonth <= oldestMonth() ? 'disabled' : ''} aria-label="Vorheriger Monat">‹</button>
+        <select id="cal-month" data-act="monthpick" aria-label="Monat auswählen">${monthOpts}</select>
+        <button class="nav" data-act="month" data-step="1" ${calMonth >= thisMonth() ? 'disabled' : ''} aria-label="Nächster Monat">›</button>
       </div>
       <p class="hint">Vergessen abzuhaken? Tippt auf einen vergangenen Tag, um ihn als geschafft einzutragen oder wieder zu entfernen. Die Tage in Folge werden sofort neu gezählt.</p>
       <div class="cals">${cals}</div>
@@ -696,6 +702,8 @@
       const { p } = derive(progress[el.dataset.kid]);
       p.timers[ex.id] = Object.assign({}, p.timers[ex.id], { reps: el.value === '' ? null : Number(el.value) });
       saveKid(el.dataset.kid, p);
+    } else if (act === 'monthpick') {
+      calMonth = el.value; render();
     } else if (act === 'exname') {
       ex.name = el.value.trim() || ex.name; saveConfig();
     } else if (act === 'exsec') {
