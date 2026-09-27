@@ -64,6 +64,9 @@ Erstelle den Familien-Wochenendplan für das kommende Wochenende (Freitagabend, 
    plus Link https://claude.ai/artifact/H8Uh9FJ3x6K6ik2JEqAE2J.
    Die .ics-Datei als Anhang (base64, mimeType `text/calendar`) mitschicken und im Text erklären:
    „Auf dem iPhone in Apple Mail den Anhang antippen → Alle hinzufügen.“
+   Am Ende des Textteils einen Abschnitt „TERMINE (maschinenlesbar)“ anfügen (wird von einer Cowork-Aufgabe auf dem Mac gelesen),
+   eine Zeile pro Termin aus der .ics-Datei, exakt im Format:
+   `TT.MM.JJJJ HH:MM-HH:MM | Titel | Ort | Typ` — Typ `aufgabe` für Einkaufen, Putzen, Hemden; sonst `termin`. Ort leer lassen, wenn unbekannt.
    Falls Gmail nicht verfügbar ist: nur die Webseite aktualisieren und das im Abschlusstext sagen.
 
 Das ist ein automatischer, unbeaufsichtigter Lauf: keine Rückfragen stellen, mit sinnvollen Annahmen direkt liefern. Keine Commits, keine Pull Requests.
