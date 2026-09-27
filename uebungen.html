@@ -127,7 +127,13 @@
   /* Kalender */
   .cals { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
   .cal { background: var(--surface); border-radius: 16px; padding: 14px; box-shadow: var(--shadow); display: grid; gap: 8px; }
+  .cal-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
   .cal-name { font: 800 1.05rem var(--display); color: var(--c); }
+  .cal-sum { font-size: .85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .month-nav { display: flex; align-items: center; gap: 6px; }
+  .month { font-weight: 700; min-width: 9.5em; text-align: center; }
+  .nav { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); font-size: 1.3rem; line-height: 1; }
+  .nav:disabled { opacity: .35; }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
   .cal-wd { text-align: center; font-size: .72rem; color: var(--muted); font-weight: 700; }
   .day {
@@ -170,7 +176,7 @@
 (() => {
   const GOAL = 28;          // Tage in Folge bis zum nächsten Block
   const PER = 3;            // Übungen pro Block
-  const CAL_WEEKS = 5;      // Wochen im Kalender zum Nachtragen
+  const CAL_MONTHS_BACK = 12; // so weit lässt sich im Kalender zurückblättern
   const KID_COLORS = ['#0e7c86', '#c43d52', '#5b5fc7', '#b86e00', '#2f7d32'];
   const LS_KEY = 'abenduebungen-v1';
 
@@ -200,6 +206,7 @@
   let db = null;
   let mode = 'local';
   let confirmRemove = null;
+  let calMonth = null;          // 'YYYY-MM' im Kalender, null = aktueller Monat
   const running = {};           // "kid:ex" -> { endAt, remaining, iv }
 
   // ---------- Datum ----------
@@ -408,12 +415,20 @@
   }
 
   // ---------- Darstellung ----------
-  function calendarWeeks() {
-    const today = todayStr();
-    const t = parseDay(today);
-    const mondayOffset = (t.getDay() + 6) % 7;
-    const firstMonday = addDays(today, -mondayOffset - (CAL_WEEKS - 1) * 7);
-    return Array.from({ length: CAL_WEEKS * 7 }, (_, i) => addDays(firstMonday, i));
+  const thisMonth = () => todayStr().slice(0, 7);
+  function shiftMonth(ym, n) {
+    const [y, m] = ym.split('-').map(Number);
+    const d = new Date(y, m - 1 + n, 1, 12);
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1);
+  }
+  const oldestMonth = () => shiftMonth(thisMonth(), -CAL_MONTHS_BACK);
+  // Tage des Monats, vorne mit Leerfeldern bis Montag aufgefüllt
+  function monthCells(ym) {
+    const first = ym + '-01';
+    const lead = (parseDay(first).getDay() + 6) % 7;
+    const cells = Array(lead).fill(null);
+    for (let d = first; d.slice(0, 7) === ym; d = addDays(d, 1)) cells.push(d);
+    return cells;
   }
 
   function render() {
@@ -490,18 +505,22 @@
     }).join('');
 
     // Kalender
-    const days = calendarWeeks();
+    if (!calMonth || calMonth > thisMonth()) calMonth = thisMonth();
+    if (calMonth < oldestMonth()) calMonth = oldestMonth();
+    const days = monthCells(calMonth);
+    const monthName = parseDay(calMonth + '-01').toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+    const monthShort = parseDay(calMonth + '-01').toLocaleDateString('de-DE', { month: 'long' });
     const wd = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map(d => `<div class="cal-wd">${d}</div>`).join('');
     const cals = kids.map(({ k, p }) => {
       const cells = days.map(d => {
+        if (!d) return '<span></span>';
         const done = !!p.doneDays[d];
         const locked = d > today || (p.blockStart && d < p.blockStart);
-        const label = parseDay(d).getDate();
-        const text = label === 1 ? label + '.' + (parseDay(d).getMonth() + 1) + '.' : label;
+        const text = parseDay(d).getDate();
         return `<button class="day${done ? ' done' : ''}${d === today ? ' today' : ''}" data-act="day" data-kid="${k.id}" data-day="${d}" ${locked ? 'disabled' : ''} aria-pressed="${done}" aria-label="${longDate(d)}, ${done ? 'geschafft' : 'nicht geschafft'}">${text}</button>`;
       }).join('');
       return `<section class="cal" style="--c:${esc(k.color)}">
-        <div class="cal-name">${esc(k.name)}</div>
+        <div class="cal-head"><span class="cal-name">${esc(k.name)}</span><span class="cal-sum">${(n => n + (n === 1 ? ' Tag' : ' Tage'))(days.filter(d => d && p.doneDays[d]).length)} im ${monthShort}</span></div>
         <div class="cal-grid">${wd}${cells}</div>
       </section>`;
     }).join('');
@@ -548,7 +567,14 @@
       <div class="section-head"><h2>Heute</h2></div>
       <section class="list">${rows}</section>
 
-      <div class="section-head"><h2>Kalender</h2></div>
+      <div class="section-head">
+        <h2>Kalender</h2>
+        <div class="month-nav">
+          <button class="nav" data-act="month" data-step="-1" ${calMonth <= oldestMonth() ? 'disabled' : ''} aria-label="Vorheriger Monat">‹</button>
+          <span class="month" aria-live="polite">${monthName}</span>
+          <button class="nav" data-act="month" data-step="1" ${calMonth >= thisMonth() ? 'disabled' : ''} aria-label="Nächster Monat">›</button>
+        </div>
+      </div>
       <p class="hint">Vergessen abzuhaken? Tippt auf einen vergangenen Tag, um ihn als geschafft einzutragen oder wieder zu entfernen. Die Tage in Folge werden sofort neu gezählt.</p>
       <div class="cals">${cals}</div>
 
@@ -619,6 +645,9 @@
       const next = Math.max(5, Math.min(3600, secondsFor(p, ex) + (act === 'plus' ? 5 : -5)));
       p.timers[exId] = Object.assign({}, p.timers[exId], { sec: next });
       saveKidSoon(kidId, p);
+    } else if (act === 'month') {
+      calMonth = shiftMonth(calMonth || thisMonth(), Number(b.dataset.step));
+      render();
     } else if (act === 'day') {
       toggleDay(kidId, b.dataset.day);
     } else if (act === 'exadd') {
