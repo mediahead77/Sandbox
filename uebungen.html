@@ -355,25 +355,76 @@
   }
 
   // ---------- Timer ----------
-  let audio = null;
+  // Klingel: ein zweifacher Glockenschlag, einmal berechnet und als WAV abgespielt.
+  // Ein <audio>-Element läuft auf dem iPhone als Medienton und damit auch bei stummgeschaltetem Klingelton.
+  const BELL_RATE = 22050;
+  let bellSamples = null, bellEl = null, bellUnlocked = false, audio = null;
   let wakeLock = null;
+  function makeBellSamples() {
+    const sr = BELL_RATE, n = Math.round(sr * 2.6), out = new Float32Array(n);
+    const partials = [[1, 1, 1.2], [2.0, .55, .9], [2.76, .4, .6], [5.4, .25, .35], [8.93, .12, .2]];
+    const f0 = 1320;
+    [0, .42].forEach(strike => {
+      const s0 = Math.round(strike * sr);
+      for (let i = s0; i < n; i++) {
+        const t = (i - s0) / sr;
+        const attack = Math.min(1, t / .003);
+        let v = 0;
+        for (const [r, a, tau] of partials) v += a * Math.exp(-t / tau) * Math.sin(2 * Math.PI * f0 * r * t);
+        out[i] += v * attack;
+      }
+    });
+    let peak = 0;
+    for (let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(out[i]));
+    for (let i = 0; i < n; i++) out[i] = out[i] / peak * .85;
+    return out;
+  }
+  function wavDataUrl(samples) {
+    const n = samples.length, buf = new DataView(new ArrayBuffer(44 + n * 2));
+    const str = (o, t) => { for (let i = 0; i < t.length; i++) buf.setUint8(o + i, t.charCodeAt(i)); };
+    str(0, 'RIFF'); buf.setUint32(4, 36 + n * 2, true); str(8, 'WAVE'); str(12, 'fmt ');
+    buf.setUint32(16, 16, true); buf.setUint16(20, 1, true); buf.setUint16(22, 1, true);
+    buf.setUint32(24, BELL_RATE, true); buf.setUint32(28, BELL_RATE * 2, true);
+    buf.setUint16(32, 2, true); buf.setUint16(34, 16, true); str(36, 'data'); buf.setUint32(40, n * 2, true);
+    for (let i = 0; i < n; i++) buf.setInt16(44 + i * 2, Math.max(-1, Math.min(1, samples[i])) * 32767, true);
+    const bytes = new Uint8Array(buf.buffer);
+    let bin = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return 'data:audio/wav;base64,' + btoa(bin);
+  }
+  // Muss aus einem Tipp heraus laufen, sonst darf das Handy später nicht klingeln.
   function unlockAudio() {
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+    try {
+      if (!bellSamples) bellSamples = makeBellSamples();
+      if (!bellEl) { bellEl = new Audio(wavDataUrl(bellSamples)); bellEl.preload = 'auto'; }
+      if (!bellUnlocked) {
+        bellEl.muted = true;
+        const pr = bellEl.play();
+        const done = () => { bellEl.pause(); bellEl.currentTime = 0; bellEl.muted = false; };
+        if (pr && pr.then) pr.then(() => { bellUnlocked = true; done(); }).catch(done); else { bellUnlocked = true; done(); }
+      }
+    } catch (e) {}
     try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch (e) {}
   }
-  function beep() {
+  function ringWebAudio() {
     try {
-      unlockAudio();
-      [0, .35, .7].forEach((t, i) => {
-        const o = audio.createOscillator(), g = audio.createGain();
-        o.frequency.value = i === 2 ? 1046 : 784;
-        g.gain.setValueAtTime(.001, audio.currentTime + t);
-        g.gain.exponentialRampToValueAtTime(.3, audio.currentTime + t + .02);
-        g.gain.exponentialRampToValueAtTime(.001, audio.currentTime + t + .3);
-        o.connect(g).connect(audio.destination);
-        o.start(audio.currentTime + t); o.stop(audio.currentTime + t + .32);
-      });
+      if (!audio || !bellSamples) return;
+      const b = audio.createBuffer(1, bellSamples.length, BELL_RATE);
+      b.getChannelData(0).set(bellSamples);
+      const src = audio.createBufferSource();
+      src.buffer = b; src.connect(audio.destination); src.start();
     } catch (e) {}
-    try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch (e) {}
+  }
+  function ring() {
+    try {
+      if (bellEl) {
+        bellEl.muted = false; bellEl.volume = 1; bellEl.currentTime = 0;
+        const pr = bellEl.play();
+        if (pr && pr.catch) pr.catch(ringWebAudio);
+      } else ringWebAudio();
+    } catch (e) { ringWebAudio(); }
+    try { navigator.vibrate && navigator.vibrate([300, 150, 300]); } catch (e) {}
   }
   async function keepAwake(on) {
     try {
@@ -408,17 +459,23 @@
     const from = running[key] ? running[key].remaining : secondsFor(p, ex);
     const r = running[key] = { endAt: Date.now() + from * 1000, remaining: from };
     keepAwake(true);
-    r.iv = setInterval(() => {
+    r.tick = () => {
+      if (running[key] !== r || !r.endAt) return;
       const left = Math.max(0, Math.ceil((r.endAt - Date.now()) / 1000));
       const el = document.querySelector('[data-time="' + key + '"]');
       if (el) el.textContent = fmt(left);
       if (left <= 0) {
         stopTimer(key, false);
-        beep();
-        toggleExercise(kidId, ex.id, true);
+        toggleExercise(kidId, ex.id, true);   // als erledigt markieren
+        ring();
       }
-    }, 200);
+    };
+    r.iv = setInterval(r.tick, 200);
   }
+  // War der Bildschirm aus, läuft der Timer beim Zurückkehren sofort ab, statt erst beim nächsten Takt.
+  const catchUp = () => Object.values(running).forEach(r => r.tick && r.tick());
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) catchUp(); });
+  window.addEventListener('focus', catchUp);
 
   // ---------- Darstellung ----------
   const thisMonth = () => todayStr().slice(0, 7);
