@@ -355,28 +355,28 @@
   }
 
   // ---------- Timer ----------
-  // Klingel: ein zweifacher Glockenschlag, einmal berechnet und als WAV abgespielt.
+  // Gong: ein tiefer Schlag mit langem Nachklang, einmal berechnet und als WAV abgespielt.
   // Ein <audio>-Element läuft auf dem iPhone als Medienton und damit auch bei stummgeschaltetem Klingelton.
   const BELL_RATE = 22050;
   let bellSamples = null, bellEl = null, bellUnlocked = false, audio = null;
   let wakeLock = null;
   function makeBellSamples() {
-    const sr = BELL_RATE, n = Math.round(sr * 2.6), out = new Float32Array(n);
-    const partials = [[1, 1, 1.2], [2.0, .55, .9], [2.76, .4, .6], [5.4, .25, .35], [8.93, .12, .2]];
-    const f0 = 1320;
-    [0, .42].forEach(strike => {
-      const s0 = Math.round(strike * sr);
-      for (let i = s0; i < n; i++) {
-        const t = (i - s0) / sr;
-        const attack = Math.min(1, t / .003);
-        let v = 0;
-        for (const [r, a, tau] of partials) v += a * Math.exp(-t / tau) * Math.sin(2 * Math.PI * f0 * r * t);
-        out[i] += v * attack;
-      }
-    });
+    const sr = BELL_RATE, n = Math.round(sr * 4.5), out = new Float32Array(n);
+    const f0 = 150;
+    // [Frequenzverhältnis, Lautstärke, Abklingzeit in s] – eng benachbarte Teiltöne erzeugen das typische Schweben
+    const partials = [[.5, .25, 2.5], [1, 1, 3.6], [1.007, .6, 3.2], [1.52, .5, 2.4], [2.03, .42, 1.9], [2.69, .3, 1.3], [3.41, .2, .9], [4.2, .14, .6]];
+    for (let i = 0; i < n; i++) {
+      const t = i / sr;
+      const attack = 1 - Math.exp(-t / .008);
+      let v = 0;
+      for (const [r, a, tau] of partials) v += a * Math.exp(-t / tau) * Math.sin(2 * Math.PI * f0 * r * t);
+      out[i] = v * attack;
+    }
+    const fade = Math.round(sr * .3);
+    for (let i = 0; i < fade; i++) out[n - 1 - i] *= i / fade;
     let peak = 0;
     for (let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(out[i]));
-    for (let i = 0; i < n; i++) out[i] = out[i] / peak * .85;
+    for (let i = 0; i < n; i++) out[i] = out[i] / peak * .9;
     return out;
   }
   function wavDataUrl(samples) {
