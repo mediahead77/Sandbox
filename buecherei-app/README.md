@@ -31,6 +31,9 @@ aus ("event not found"). Deshalb unten EINFACHE Anfuehrungszeichen ('...')
 verwenden, nicht doppelte -- oder `cd /Users/timwittig/Documents/Tim/` tippen
 und dann TAB druecken, die Shell vervollstaendigt und escaped korrekt.
 
+**Python-Version:** Das Skript laeuft ab Python 3.9 (auch mit dem
+macOS-System-Python). Pruefen mit `python3 --version`.
+
 ```bash
 cd '/Users/timwittig/Documents/Tim/!_Claude/Scheduled/regular-check/buecherei-app'
 
@@ -90,11 +93,16 @@ cp com.tim.buechereicheck.plist ~/Library/LaunchAgents/
 launchctl load ~/Library/LaunchAgents/com.tim.buechereicheck.plist
 ```
 
-Laeuft danach jeden Sonntag um 09:00 Uhr, sofern der Mac zu diesem Zeitpunkt
-an ist (launchd holt verpasste Laeufe NICHT automatisch nach -- falls der
-Mac oft aus ist, in den Energiesparoptionen "Zum Netzwerkzugriff aktivieren"
-bzw. geplante Aufwach-Zeiten pruefen, oder die Uhrzeit auf einen Moment
-legen, an dem der Mac sicher an ist).
+Laeuft danach jeden Sonntag um 09:00 Uhr. Verpasste Termine:
+
+- Mac war im **Ruhezustand** (Deckel zu): launchd holt den Lauf beim
+  naechsten Aufwachen nach. Mehrere verpasste Termine werden zu einem Lauf
+  zusammengefasst.
+- Mac war **ausgeschaltet**: Der Lauf entfaellt ersatzlos, auch nach dem
+  Hochfahren wird nichts nachgeholt. Falls das oft vorkommt, die Uhrzeit auf
+  einen Moment legen, an dem der Mac sicher an ist, oder per
+  `sudo pmset repeat wakeorpoweron U 08:55:00` einen Start/Aufwecken kurz
+  vorher planen.
 
 Logs liegen in `buecherei-app/logs/` -- ein Log pro Monat plus die
 launchd-eigenen Out-/Error-Logs.

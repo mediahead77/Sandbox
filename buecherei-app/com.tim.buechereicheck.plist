@@ -23,8 +23,10 @@
         <integer>0</integer>
     </dict>
 
-    <!-- Falls der Mac zur geplanten Zeit aus/im Schlaf war: beim naechsten
-         Hochfahren/Aufwachen nachholen, statt den Lauf zu verpassen. -->
+    <!-- RunAtLoad=false: NICHT bei jedem Login/launchctl load laufen.
+         Verpasste Termine: War der Mac im Ruhezustand, holt launchd den Lauf
+         beim Aufwachen nach (mehrere verpasste werden zu einem). War der Mac
+         AUSGESCHALTET, entfaellt der Lauf ersatzlos. -->
     <key>RunAtLoad</key>
     <false/>
 

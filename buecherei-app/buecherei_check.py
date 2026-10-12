@@ -35,6 +35,9 @@ IMPORTANT LIMITATIONS (read before relying on this):
   intentional; it should never report "all clear" when it actually failed.
 """
 
+# Makes "date | None" etc. work on Python 3.9 (macOS system python3) too.
+from __future__ import annotations
+
 import argparse
 import re
 import smtplib
