@@ -23,6 +23,21 @@ Testlauf gefunden und gefixt (2026-08-09):
 Nach dem naechsten Lauf: pruef den Report trotzdem kritisch, bevor du ihm
 vertraust -- v.a. ob bei Stuttgart tatsaechlich Ausleihen auftauchen.
 
+## 0. Schnellstart per Doppelklick
+
+`Buecherei-Check.command` im Finder doppelklicken. Beim ersten Start richtet
+es venv, Pakete und Chromium selbst ein (einmalig, ein paar Minuten), danach
+laeuft der Check und `uebersicht.txt` oeffnet sich. Abschnitt 1 ist damit
+nur noch fuer manuelles Einrichten noetig.
+
+Falls macOS den Start blockiert ("kann nicht geoeffnet werden"): einmal
+Rechtsklick -> "Oeffnen", oder im Terminal:
+
+```bash
+chmod +x Buecherei-Check.command
+xattr -d com.apple.quarantine Buecherei-Check.command
+```
+
 ## 1. Einmalig einrichten
 
 **Achtung Terminal-Falle:** Der Ordnername enthaelt ein "!" (in "!_Claude").
@@ -125,6 +140,7 @@ wie die neue Seite aussieht.
 
 ## Dateien in diesem Ordner
 
+- `Buecherei-Check.command` -- Doppelklick-Starter (richtet beim 1. Mal alles ein)
 - `buecherei_check.py` -- das eigentliche Skript
 - `uebersicht.txt` -- wird beim ersten Lauf erzeugt, danach jedes Mal
   ueberschrieben; das ist die eigentliche "Ansicht"
