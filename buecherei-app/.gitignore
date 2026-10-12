@@ -1,0 +1,10 @@
+# Zugangsdaten / Secrets -- nie einchecken
+library_accounts.yaml
+email_config.yaml
+
+# Laufzeit-Artefakte
+venv/
+logs/
+debug_screenshots/
+uebersicht.txt
+__pycache__/

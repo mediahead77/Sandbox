@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.tim.buechereicheck</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/timwittig/Documents/Tim/!_Claude/Scheduled/regular-check/buecherei-app/run.sh</string>
+    </array>
+
+    <!-- Jeden Sonntag um 09:00 Uhr, wie der bisherige Cowork-Zeitplan -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key>
+        <integer>0</integer>
+        <key>Hour</key>
+        <integer>9</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <!-- Falls der Mac zur geplanten Zeit aus/im Schlaf war: beim naechsten
+         Hochfahren/Aufwachen nachholen, statt den Lauf zu verpassen. -->
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/timwittig/Documents/Tim/!_Claude/Scheduled/regular-check/buecherei-app/logs/launchd.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/timwittig/Documents/Tim/!_Claude/Scheduled/regular-check/buecherei-app/logs/launchd-error.log</string>
+</dict>
+</plist>

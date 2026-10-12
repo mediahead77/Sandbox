@@ -1,0 +1,12 @@
+# OPTIONAL -- nur noetig, wenn du buecherei_check.py mit --email aufrufst.
+# Standardmaessig schreibt das Skript nur uebersicht.txt, keine E-Mail.
+#
+# Kopiere diese Datei zu "email_config.yaml" (ohne .example) im selben Ordner
+# und trage deine echten Werte ein. email_config.yaml wird vom Skript gelesen
+# und sollte NIE geteilt oder eingecheckt werden -- enthaelt ein App-Passwort.
+
+smtp_server: smtp.gmail.com
+smtp_port: 587
+sender_email: "tim.wittig@gmail.com"
+app_password: "xxxx xxxx xxxx xxxx"   # siehe README.md, Abschnitt "E-Mail einrichten"
+recipient_email: "tim.wittig@gmail.com"
